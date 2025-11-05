@@ -73,3 +73,17 @@ Columnas (atributos): 48
 > No estigmatizar colonias; controlar por **exposición al tráfico** e **infraestructura**.
 
 ---
+##Scripts de carga y análisis de datos
+Iniciamos el script `carga.sql` para la base de datos `traffic_accident_chicago` y la tabla principal donde se cargan los datos de origen del archivo CSV. A continuación, el script `analisis.sql` realiza, mediante una consulta SQL, un análisis general del conjunto de datos del informe. Este análisis considera los siguientes aspectos:
+
+La existencia de columnas con objetos iguales
+
+Los valores mínimos tienen el área máxima del valor numérico
+
+Los promedios de las variables cuantitativas
+
+La presencia de detecciones duplicadas con inconsistencias
+
+El recuento de valores tiene un registro nulo para una categoría
+
+Este procedimiento opera sobre los posibles errores, valores atípicos y patrones generales en los datos, lo cual constituye un paso preliminar en el proceso de normalización con análisis detallado.
