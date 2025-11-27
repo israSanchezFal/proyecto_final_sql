@@ -1,70 +1,121 @@
 -- Script: carga.sql
 -- Proyecto: Análisis de accidentes de tráfico en Chicago
 -- Fecha: Noviembre 2025
--- HECHO TODO DESDE LA TERMINAL DE MAC
 
--- 1. Crear la base de datos
-CREATE DATABASE traffic_crashes_chicago;
+--Abrir la terminal y conectarte a postgres
+sql -U- usuario
 
--- 2. Conectarse a la base recién creada
-\c traffic_crashes_chicago;
+-- Crear la base de datos desde la terminal
+CREATE DATABASE proyecto_final_db;
 
--- 3. Crear tabla base con todas las columnas (48 en total)
-CREATE TABLE crashes_raw (
-    crash_record_id VARCHAR(100),
-    crash_date_est_i VARCHAR(10),
-    crash_date TIMESTAMP,
-    posted_speed_limit INTEGER,
-    traffic_control_device VARCHAR(100),
-    device_condition VARCHAR(100),
-    weather_condition VARCHAR(100),
-    lighting_condition VARCHAR(100),
-    first_crash_type VARCHAR(100),
-    trafficway_type VARCHAR(100),
-    lane_cnt INTEGER,
-    alignment VARCHAR(100),
-    roadway_surface_cond VARCHAR(100),
-    road_defect VARCHAR(100),
-    report_type VARCHAR(100),
-    crash_type VARCHAR(150),
-    intersection_related_i VARCHAR(5),
-    not_right_of_way_i VARCHAR(5),
-    hit_and_run_i VARCHAR(5),
-    damage VARCHAR(100),
-    date_police_notified TIMESTAMP,
-    prim_contributory_cause VARCHAR(200),
-    sec_contributory_cause VARCHAR(200),
-    street_no INTEGER,
-    street_direction VARCHAR(10),
-    street_name VARCHAR(100),
-    beat_of_occurrence VARCHAR(20),
-    photos_taken_i VARCHAR(5),
-    statements_taken_i VARCHAR(5),
-    dooring_i VARCHAR(5),
-    work_zone_i VARCHAR(5),
-    work_zone_type VARCHAR(100),
-    workers_present_i VARCHAR(5),
-    num_units INTEGER,
-    most_severe_injury VARCHAR(100),
-    injuries_total INTEGER,
-    injuries_fatal INTEGER,
-    injuries_incapacitating INTEGER,
-    injuries_non_incapacitating INTEGER,
-    injuries_reported_not_evident INTEGER,
-    injuries_no_indication INTEGER,
-    injuries_unknown INTEGER,
-    crash_hour INTEGER,
-    crash_day_of_week INTEGER,
-    crash_month INTEGER,
-    latitude NUMERIC(10,7),
-    longitude NUMERIC(10,7),
-    location VARCHAR(100)
+-- Conectarse a la base recién creada solo para verificar
+\c proyecto_final_db;
+
+-- Una vez creada, entrar a TablePlus y crear la tabla 
+-- (como está demasiado sucia empezaremos generalizando casi todo como TEXT)
+CREATE TABLE traffic_crashes(
+    CRASH_RECORD_ID TEXT,
+    CRASH_DATE_EST_I TEXT,
+    CRASH_DATE TIMESTAMP,    
+    POSTED_SPEED_LIMIT TEXT,  
+    TRAFFIC_CONTROL_DEVICE TEXT,
+    DEVICE_CONDITION TEXT,
+    WEATHER_CONDITION TEXT,
+    LIGHTING_CONDITION TEXT,
+    FIRST_CRASH_TYPE TEXT,
+    TRAFFICWAY_TYPE TEXT,
+    LANE_CNT TEXT,
+    ALIGNMENT TEXT,
+    ROADWAY_SURFACE_COND TEXT,
+    ROAD_DEFECT TEXT,
+    REPORT_TYPE TEXT,
+    CRASH_TYPE TEXT,
+    INTERSECTION_RELATED_I TEXT,
+    NOT_RIGHT_OF_WAY_I TEXT,
+    HIT_AND_RUN_I TEXT,
+    DAMAGE TEXT,
+    DATE_POLICE_NOTIFIED TIMESTAMP,
+    PRIM_CONTRIBUTORY_CAUSE TEXT,
+    SEC_CONTRIBUTORY_CAUSE TEXT,
+    STREET_NO TEXT,
+    STREET_DIRECTION TEXT,
+    STREET_NAME TEXT,
+    BEAT_OF_OCCURRENCE TEXT,
+    PHOTOS_TAKEN_I TEXT,
+    STATEMENTS_TAKEN_I TEXT,
+    DOORING_I TEXT,
+    WORK_ZONE_I TEXT,
+    WORK_ZONE_TYPE TEXT,
+    WORKERS_PRESENT_I TEXT,
+    NUM_UNITS TEXT,          
+    MOST_SEVERE_INJURY TEXT,
+    INJURIES_TOTAL TEXT,
+    INJURIES_FATAL TEXT,
+    INJURIES_INCAPACITATING TEXT,
+    INJURIES_NON_INCAPACITATING TEXT,
+    INJURIES_REPORTED_NOT_EVIDENT TEXT,
+    INJURIES_NO_INDICATION TEXT,
+    INJURIES_UNKNOWN TEXT,
+    CRASH_HOUR BIGINT,
+    CRASH_DAY_OF_WEEK BIGINT,
+    CRASH_MONTH BIGINT,
+    LATITUDE NUMERIC,
+    LONGITUDE NUMERIC,
+    LOCATION TEXT
 );
 
--- 4. Cargar los datos desde el CSV (ajustar la ruta según tu carpeta)
-\copy crashes_raw FROM '/Users/parisschool/Downloads/Traffic_Crashes_-_Crashes_20251104.csv' DELIMITER ',' CSV HEADER;
+-- Una vez creada, haz un "refresh workspace" para poder visualizar la tabla
+-- Sitúate en ella y desde "Archivo" importa el documento que puedes descargar aqui:
+https://data.cityofchicago.org/Transportation/Traffic-Crashes-Crashes/85ca-t3if/about_data
 
--- 5. Verificar que la carga fue exitosa
-SELECT COUNT(*) FROM crashes_raw;
-SELECT * FROM crashes_raw LIMIT 10;
+-- En la ventana que abre para importar, selecciona que quieres importar en traffic_crashes
+-- Finalmente selecciona "Match Columns by Name - Case Insensitive" e "Import"
+    
+
+-- Para concretar la carga, vamos a hacer un análisis preliminar, más de la tabla que de los datos como tal
+
+-- Total de Filas
+SELECT COUNT(*) AS total_rows
+FROM traffic_crashes;
+
+-- Rango entre el choque más antiguo y el más actual
+SELECT 
+    MIN(crash_date) AS earliest_crash,
+    MAX(crash_date) AS latest_crash
+FROM traffic_crashes;
+
+-- Al tener por el momento valores numéricos reducidos, un resumen de ellos es:
+SELECT
+    MIN(crash_hour) AS min_hour,
+    MAX(crash_hour) AS max_hour,
+    AVG(crash_hour) AS avg_hour,
+
+    MIN(crash_day_of_week) AS min_day,
+    MAX(crash_day_of_week) AS max_day,
+    AVG(crash_day_of_week) AS avg_day,
+
+    MIN(crash_month) AS min_month,
+    MAX(crash_month) AS max_month,
+    AVG(crash_month) AS avg_month
+FROM traffic_crashes;
+
+-- Para buscar columnas con valores únicos, analizando el db podemos ver que si total_rows = distinct_id, entonces el ID es único y confiable.
+SELECT 
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT crash_record_id) AS distinct_id
+FROM traffic_crashes;
+
+-- Conteo de nulos por columnas importantes
+SELECT COUNT(*) FILTER (WHERE crash_date IS NULL) AS null_crash_date,
+       COUNT(*) FILTER (WHERE posted_speed_limit IS NULL) AS null_speed_limit,
+       COUNT(*) FILTER (WHERE weather_condition IS NULL) AS null_weather,
+       COUNT(*) FILTER (WHERE lighting_condition IS NULL) AS null_lighting,
+       COUNT(*) FILTER (WHERE first_crash_type IS NULL) AS null_first_crash_type
+FROM traffic_crashes; 
+
+-- Para finalizar, un conteo por tipo de choque
+SELECT crash_type, COUNT(*) 
+FROM traffic_crashes
+GROUP BY crash_type
+ORDER BY COUNT(*) DESC;
 
