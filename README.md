@@ -83,3 +83,78 @@ Iniciamos el script `carga.sql` para la base de datos `traffic_accident_chicago`
 - El recuento de valores tiene un registro nulo para una categoría
 
 Este procedimiento opera sobre los posibles errores, valores atípicos y patrones generales en los datos, lo cual constituye un paso preliminar en el proceso de normalización con análisis detallado.
+
+
+
+erDiagram
+  CRASH ||--|| CRASH_LOCATION : has
+  CRASH ||--|| CRASH_INJURY_SUMMARY : has
+  CRASH ||--o{ CRASH_CONTRIBUTORY_CAUSE : has
+
+  CRASH {
+    int crash_id PK
+    varchar crash_record_id UNIQUE
+    boolean crash_date_est
+    timestamp crash_date
+    int posted_speed_limit
+    text traffic_control_device
+    text device_condition
+    text weather_condition
+    text lighting_condition
+    text first_crash_type
+    text trafficway_type
+    int lane_cnt
+    text alignment
+    text roadway_surface_cond
+    text road_defect
+    text report_type
+    text crash_type
+    boolean intersection_related
+    boolean not_right_of_way
+    boolean hit_and_run
+    text damage
+    timestamp date_police_notified
+    boolean photos_taken
+    boolean statements_taken
+    boolean dooring
+    boolean work_zone
+    text work_zone_type
+    boolean workers_present
+    int num_units
+    int crash_hour
+    int crash_day_of_week
+    int crash_month
+  }
+
+  CRASH_LOCATION {
+    int location_id PK
+    int crash_id FK UNIQUE
+    int street_no
+    text street_direction
+    text street_name
+    int beat_of_occurrence
+    numeric latitude
+    numeric longitude
+    text location
+  }
+
+  CRASH_INJURY_SUMMARY {
+    int injury_id PK
+    int crash_id FK UNIQUE
+    text most_severe_injury
+    int injuries_total
+    int injuries_fatal
+    int injuries_incapacitating
+    int injuries_non_incapacitating
+    int injuries_reported_not_evident
+    int injuries_no_indication
+    int injuries_unknown
+  }
+
+  CRASH_CONTRIBUTORY_CAUSE {
+    int crash_cause_id PK
+    int crash_id FK
+    text cause_role
+    text contributory_cause
+    UNIQUE crash_id_cause_role
+  }
