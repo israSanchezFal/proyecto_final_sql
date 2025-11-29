@@ -77,15 +77,15 @@ Columnas (atributos): 48
 
 Para comenzar, se deben ejecutar los siguientes comandos en la terminal (psql) para crear la base de datos de destino:
 
-- 1. Conectarse con el usuario desde la terminal 
+1. Conectarse con el usuario desde la terminal 
 ```console
 psql -U usuario
 ```
-- 2. Crear la Bsse de Datos
+2. Crear la Bsse de Datos
 ```console
 CREATE DATABASE proyecto_final_db;
 ```
-- 3. Conectarse a la base de datos para ver que todo está correcto 
+3. Conectarse a la base de datos para ver que todo está correcto 
 ```console
 \c proyecto_final_db;
 ```
