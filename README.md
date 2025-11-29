@@ -92,4 +92,77 @@ CREATE DATABASE proyecto_final_db;
 
 Conecta tu base de datos en TablePlus, ya que ahí fue donde se realizaron todas las operaciones siguientes. El procedimiento es intuitivo, solo debes de llenar los espacios que estén vacíos después de escojer la opción "Creat Connection". En nuestro caso escogimos el nombre de proyecto_final_db, si se le es más fácil, escoja el mismo nombre.
 
+Una vez dentro, abre un archivo sql vacío para poder crear la tabla. La mayoría de las columnas como TEXT para garantizar la carga segura de datos sucios o atípicos sin que se produzcan errores de casting durante la importación.
+
+```console
+CREATE TABLE traffic_crashes(
+    CRASH_RECORD_ID TEXT,
+    CRASH_DATE_EST_I TEXT,
+    CRASH_DATE TIMESTAMP,    
+    POSTED_SPEED_LIMIT TEXT,  
+    TRAFFIC_CONTROL_DEVICE TEXT,
+    DEVICE_CONDITION TEXT,
+    WEATHER_CONDITION TEXT,
+    LIGHTING_CONDITION TEXT,
+    FIRST_CRASH_TYPE TEXT,
+    TRAFFICWAY_TYPE TEXT,
+    LANE_CNT TEXT,
+    ALIGNMENT TEXT,
+    ROADWAY_SURFACE_COND TEXT,
+    ROAD_DEFECT TEXT,
+    REPORT_TYPE TEXT,
+    CRASH_TYPE TEXT,
+    INTERSECTION_RELATED_I TEXT,
+    NOT_RIGHT_OF_WAY_I TEXT,
+    HIT_AND_RUN_I TEXT,
+    DAMAGE TEXT,
+    DATE_POLICE_NOTIFIED TIMESTAMP,
+    PRIM_CONTRIBUTORY_CAUSE TEXT,
+    SEC_CONTRIBUTORY_CAUSE TEXT,
+    STREET_NO TEXT,
+    STREET_DIRECTION TEXT,
+    STREET_NAME TEXT,
+    BEAT_OF_OCCURRENCE TEXT,
+    PHOTOS_TAKEN_I TEXT,
+    STATEMENTS_TAKEN_I TEXT,
+    DOORING_I TEXT,
+    WORK_ZONE_I TEXT,
+    WORK_ZONE_TYPE TEXT,
+    WORKERS_PRESENT_I TEXT,
+    NUM_UNITS TEXT,          
+    MOST_SEVERE_INJURY TEXT,
+    INJURIES_TOTAL TEXT,
+    INJURIES_FATAL TEXT,
+    INJURIES_INCAPACITATING TEXT,
+    INJURIES_NON_INCAPACITATING TEXT,
+    INJURIES_REPORTED_NOT_EVIDENT TEXT,
+    INJURIES_NO_INDICATION TEXT,
+    INJURIES_UNKNOWN TEXT,
+    CRASH_HOUR BIGINT,
+    CRASH_DAY_OF_WEEK BIGINT,
+    CRASH_MONTH BIGINT,
+    LATITUDE NUMERIC,
+    LONGITUDE NUMERIC,
+    LOCATION TEXT
+);
+```
+
+Una vez completada la carga, se incluyen las siguientes consultas SQL (dentro de carga.sql) para un análisis preliminar. Este paso valida la integridad de la clave principal y cuantifica la calidad de los datos crudos antes de la limpieza formal:
+
+1. Verificación de Integridad considerando y confirmando CRASH_RECORD_ID como clave.
+```console
+SELECT
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT crash_record_id) AS distinct_id
+FROM traffic_crashes;
+```
+2. Conteo de nulos
+```console
+
+```
+3. Verificación de rangos
+```console
+
+```
+4. 
 
