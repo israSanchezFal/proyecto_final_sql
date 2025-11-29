@@ -165,8 +165,11 @@ SELECT COUNT(*) FILTER (WHERE crash_date IS NULL) AS null_crash_date,
        COUNT(*) FILTER (WHERE first_crash_type IS NULL) AS null_first_crash_type
 FROM traffic_crashes; 
 ```
-3. 
+3. Conteo por tipo de choque
 ```console
-
+SELECT crash_type, COUNT(*) 
+FROM traffic_crashes
+GROUP BY crash_type
+ORDER BY COUNT(*) DESC;
 ```
 
