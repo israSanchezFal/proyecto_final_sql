@@ -158,11 +158,15 @@ FROM traffic_crashes;
 ```
 2. Conteo de nulos
 ```console
-
+SELECT COUNT(*) FILTER (WHERE crash_date IS NULL) AS null_crash_date,
+       COUNT(*) FILTER (WHERE posted_speed_limit IS NULL) AS null_speed_limit,
+       COUNT(*) FILTER (WHERE weather_condition IS NULL) AS null_weather,
+       COUNT(*) FILTER (WHERE lighting_condition IS NULL) AS null_lighting,
+       COUNT(*) FILTER (WHERE first_crash_type IS NULL) AS null_first_crash_type
+FROM traffic_crashes; 
 ```
-3. Verificación de rangos
+3. 
 ```console
 
 ```
-4. 
 
