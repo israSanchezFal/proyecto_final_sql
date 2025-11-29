@@ -89,3 +89,7 @@ CREATE DATABASE proyecto_final_db;
 ```console
 \c proyecto_final_db;
 ```
+
+Conecta tu base de datos en TablePlus, ya que ahí fue donde se realizaron todas las operaciones siguientes. El procedimiento es intuitivo, solo debes de llenar los espacios que estén vacíos después de escojer la opción "Creat Connection". En nuestro caso escogimos el nombre de proyecto_final_db, si se le es más fácil, escoja el mismo nombre.
+
+
