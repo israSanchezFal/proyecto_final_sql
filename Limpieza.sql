@@ -55,7 +55,7 @@ CREATE TABLE traffic_crashes_clean (
 
 INSERT INTO traffic_crashes_clean
 SELECT
-	-- TRIM quita espacios, NULLIF convierte '' a NULL
+	-- TRIM quita espacios antes y después de la cadena, NULLIF convierte '' a NULL
   	NULLIF(TRIM(crash_record_id), '')::VARCHAR,
 
   	-- crash_date_est_i es un indicador tipo 'Y'/'N'/vacío, Primero revisamos vacío usando el NULLIF y TRIM
