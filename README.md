@@ -146,8 +146,13 @@ CREATE TABLE traffic_crashes(
     LOCATION TEXT
 );
 ```
+Una vez creada la tabla, realiza un “Refresh workspace” para poder visualizarla; luego, selecciónala y desde Archivo → Importar carga el dataset de Traffic Crashes de Chicago, puedes descargarlo aquí: 
 
-Una vez completada la carga, se incluyen las siguientes consultas SQL (dentro de carga.sql) para un análisis preliminar. Este paso valida la integridad de la clave principal y cuantifica la calidad de los datos crudos antes de la limpieza formal:
+https://data.cityofchicago.org/Transportation/Traffic-Crashes-Crashes/85ca-t3if/about_data
+
+En la ventana de importación, elige importar dentro de traffic_crashes y, para asegurar el mapeo correcto, selecciona “Match Columns by Name – Case Insensitive” y después “Import”. 
+
+Para confirmar que la carga quedó bien, se realizará un análisis preliminar enfocado en la estructura y consistencia general de la tabla más que en la interpretación de los datos.
 
 1. Verificación de Integridad considerando y confirmando CRASH_RECORD_ID como clave.
 ```console
