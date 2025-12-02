@@ -178,3 +178,42 @@ GROUP BY crash_type
 ORDER BY COUNT(*) DESC;
 ```
 
+## 💸 Análisis de Impacto Económico: El Costo Invisible del Clima
+
+### 🎯 Objetivo del Análisis
+Identificar qué combinaciones de **clima e iluminación** generan los accidentes más costosos. A diferencia de la frecuencia (dónde ocurren más choques), este análisis se centra en la **severidad económica**, permitiendo a las aseguradoras y organismos públicos prever reservas de capital para condiciones específicas.
+
+### 🧠 Metodología y Lógica SQL
+Dado que el costo exacto es una variable discreta por rangos, creamos un **Atributo Enriquecido** llamado `costo_promedio_estimado`.
+* **Transformación:** Convertimos las categorías de texto (`OVER $1,500`) a valores numéricos ponderados mediante una expresión `CASE`.
+* **Ranking:** Utilizamos la función de ventana `DENSE_RANK()` para clasificar las condiciones de mayor a menor impacto financiero, sin saltos en la numeración.
+
+```sql
+-- Consulta: Ranking de Severidad Económica (Top 15)
+SELECT 
+    c.weather_condition,
+    c.lighting_condition,
+    COUNT(c.crash_id) AS cantidad_accidentes,
+    AVG(CASE 
+        WHEN c.damage = 'OVER $1,500' THEN 1500
+        WHEN c.damage = '$501 - $1,500' THEN 1000
+        WHEN c.damage = '$500 OR LESS' THEN 250
+        ELSE 0 
+    END) AS costo_promedio_estimado,
+    DENSE_RANK() OVER (
+        ORDER BY AVG(CASE 
+            WHEN c.damage = 'OVER $1,500' THEN 1500
+            ELSE 0 
+        END) DESC
+    ) AS ranking_severidad
+FROM 
+    public.crash c
+WHERE 
+    c.weather_condition != 'UNKNOWN'
+GROUP BY 
+    c.weather_condition, c.lighting_condition
+ORDER BY 
+    ranking_severidad ASC
+LIMIT 15;
+
+
