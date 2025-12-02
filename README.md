@@ -235,6 +235,7 @@ La siguiente tabla destaca las combinaciones de clima e iluminación que generan
 > * **Ranking #1:** Representa pérdida total del vehículo casi garantizada, aunque son eventos poco frecuentes.
 > * **Ranking #5:** *Freezing Rain* en oscuridad es el **riesgo sistémico más alto**, combinando un costo muy elevado ($1,344) con una frecuencia masiva (casi 1,000 eventos).
 
+
 ## 💀 Análisis de Letalidad: Distinguiendo lo Frecuente de lo Mortal
 
 ### 🎯 Objetivo del Análisis
@@ -246,7 +247,7 @@ Creamos una métrica llamada `indice_letalidad` que normaliza los datos. No nos 
 
 $$\text{Índice de Letalidad} = \left( \frac{\text{Total Muertes}}{\text{Total Accidentes de esa Causa}} \right) \times 100$$
 
-```sql
+```console
 -- Consulta: Top 10 Causas con mayor índice de mortalidad
 SELECT 
     cat.cause_text AS causa_principal,
@@ -273,5 +274,6 @@ HAVING
 ORDER BY 
     indice_letalidad DESC 
 LIMIT 10;
+```
 
 
