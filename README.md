@@ -207,7 +207,7 @@ La siguiente tabla destaca las combinaciones de clima e iluminación que generan
 > * **Ranking #5:** *Freezing Rain* en oscuridad es el **riesgo sistémico más alto**, combinando un costo muy elevado ($1,344) con una frecuencia masiva (casi 1,000 eventos).
 
 
-```sql
+```console
 -- Consulta: Ranking de Severidad Económica (Top 15)
 SELECT 
     c.weather_condition,
