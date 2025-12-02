@@ -216,4 +216,20 @@ ORDER BY
     ranking_severidad ASC
 LIMIT 15;
 
+### 📊 Top Hallazgos: Condiciones de Mayor Riesgo Financiero
 
+La siguiente tabla destaca las combinaciones de clima e iluminación que generan los costos estimados más altos por accidente. Se han seleccionado tanto eventos raros de pérdida total como eventos frecuentes de alto costo.
+
+| Ranking 🏆 | Condición Climática 🌧️ | Iluminación 💡 | Frecuencia (n) 📉 | Costo Promedio Est. 💰 |
+| :---: | :--- | :--- | :---: | :---: |
+| **#1** | **BLOWING SAND, SOIL** | DARKNESS, LIGHTED ROAD | 2 | **$1,500.00** |
+| **#1** | **BLOWING SAND, SOIL** | DARKNESS | 3 | **$1,500.00** |
+| **#2** | FOG/SMOKE/HAZE | UNKNOWN | 12 | $1,416.67 |
+| **#3** | FOG/SMOKE/HAZE | DAWN | 69 | $1,351.45 |
+| **#5** | **FREEZING RAIN/DRIZZLE** | DARKNESS, LIGHTED ROAD | **977** | $1,344.16 |
+| **#6** | BLOWING SNOW | DUSK | 22 | $1,284.09 |
+| **#13** | SLEET/HAIL | DARKNESS, LIGHTED ROAD | 416 | $1,298.67 |
+
+> **Interpretación:**
+> * **Ranking #1:** Representa pérdida total del vehículo casi garantizada, aunque son eventos poco frecuentes.
+> * **Ranking #5:** *Freezing Rain* en oscuridad es el **riesgo sistémico más alto**, combinando un costo muy elevado ($1,344) con una frecuencia masiva (casi 1,000 eventos).
