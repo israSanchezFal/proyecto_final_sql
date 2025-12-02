@@ -1,0 +1,122 @@
+--C1.  Análisis de crecimiento mensual de accidentes
+SELECT 
+    TO_CHAR(c.crash_date, 'YYYY-MM') AS mes_anio,
+    COUNT(c.crash_id) AS total_accidentes,
+    -- Función de ventana para obtener el valor del mes anterior
+    LAG(COUNT(c.crash_id)) OVER (ORDER BY TO_CHAR(c.crash_date, 'YYYY-MM')) AS accidentes_mes_anterior,
+    -- Atributo Enriquecido: Cálculo del cambio porcentual
+    ROUND(
+        (COUNT(c.crash_id) - LAG(COUNT(c.crash_id)) OVER (ORDER BY TO_CHAR(c.crash_date, 'YYYY-MM')))::numeric / 
+        NULLIF(LAG(COUNT(c.crash_id)) OVER (ORDER BY TO_CHAR(c.crash_date, 'YYYY-MM')), 0) * 100, 
+    2) AS cambio_mensual_pct
+FROM 
+    public.crash c
+GROUP BY 
+    TO_CHAR(c.crash_date, 'YYYY-MM')
+ORDER BY 
+    mes_anio DESC;
+
+
+
+
+--C2.  Ranking de condiciones climáticas por severidad económica--
+SELECT 
+    c.weather_condition,
+    c.lighting_condition,
+    COUNT(c.crash_id) AS cantidad_accidentes,
+    -- Atributo enriquecido: Transformar el texto de daños a un valor numérico estimado para ordenar
+    AVG(CASE 
+        WHEN c.damage = 'OVER $1,500' THEN 1500
+        WHEN c.damage = '$501 - $1,500' THEN 1000
+        WHEN c.damage = '$500 OR LESS' THEN 250
+        ELSE 0 
+    END) AS costo_promedio_estimado,
+    -- Función de ventana: Ranking de peligrosidad
+    DENSE_RANK() OVER (
+        ORDER BY AVG(CASE 
+            WHEN c.damage = 'OVER $1,500' THEN 1500
+            ELSE 0 
+        END) DESC
+    ) AS ranking_severidad
+FROM 
+    public.crash c
+WHERE 
+    c.weather_condition != 'UNKNOWN'
+GROUP BY 
+    c.weather_condition, 
+    c.lighting_condition
+ORDER BY 
+    ranking_severidad ASC
+LIMIT 15;
+
+
+
+
+--C3.  Relación entre la causa contributiva y la fatalidad--
+SELECT 
+    cat.cause_text AS causa_principal,
+    COUNT(c.crash_id) AS total_eventos,
+    SUM(cis.injuries_fatal) AS total_muertes,
+    SUM(cis.injuries_total) AS total_heridos,
+    -- Atributo Enriquecido: Índice de letalidad (muertes por cada 100 accidentes de este tipo)
+    ROUND(
+        (SUM(cis.injuries_fatal)::numeric / NULLIF(COUNT(c.crash_id), 0)) * 100, 
+    4) AS indice_letalidad
+FROM 
+    public.crash c
+JOIN 
+    public.crash_cause cc ON c.crash_id = cc.crash_id  -- CORRECCIÓN AQUÍ: Usamos crash_id
+JOIN 
+    public.cat_contributory_cause cat ON cc.cause_id = cat.cause_id
+JOIN 
+    public.crash_injury_summary cis ON c.crash_id = cis.crash_id
+WHERE 
+    cc.cause_role = 'PRIMARY' -- Filtramos solo la causa principal para no duplicar
+GROUP BY 
+    cat.cause_text
+HAVING 
+    COUNT(c.crash_id) > 50 -- Filtramos causas muy raras para limpiar el análisis
+ORDER BY 
+    indice_letalidad DESC 
+LIMIT 10;
+
+
+
+
+--C4. Severidad vs límite de velocidad--
+SELECT 
+    -- 1. Creación de Bandas de Velocidad (Binning)
+    CASE 
+        WHEN c.posted_speed_limit <= 20 THEN '00-20 MPH (Zona Lenta)'
+        WHEN c.posted_speed_limit > 20 AND c.posted_speed_limit <= 30 THEN '21-30 MPH (Urbano)'
+        WHEN c.posted_speed_limit > 30 AND c.posted_speed_limit <= 45 THEN '31-45 MPH (Avenidas)'
+        WHEN c.posted_speed_limit > 45 AND c.posted_speed_limit <= 60 THEN '46-60 MPH (Rápida)'
+        WHEN c.posted_speed_limit > 60 THEN '61+ MPH (Autopista)'
+        ELSE 'Desconocido'
+    END AS banda_velocidad,
+
+    -- 2. Métricas Base
+    COUNT(c.crash_id) AS total_accidentes,
+    SUM(cis.injuries_total) AS total_heridos,
+    SUM(cis.injuries_fatal) AS total_muertes,
+
+    -- 3. Atributo Analítico: Severidad Promedio (Heridos por accidente)
+    ROUND(AVG(cis.injuries_total), 4) AS promedio_heridos_por_evento,
+
+    -- 4. Atributo Analítico: Probabilidad de Lesión (%)
+    -- Porcentaje de accidentes en esta banda que tuvieron al menos 1 herido
+    ROUND(
+        (COUNT(CASE WHEN cis.injuries_total > 0 THEN 1 END)::numeric / 
+        NULLIF(COUNT(c.crash_id), 0)) * 100, 
+    2) AS probabilidad_lesion_pct
+
+FROM 
+    public.crash c
+JOIN 
+    public.crash_injury_summary cis ON c.crash_id = cis.crash_id
+WHERE 
+    c.posted_speed_limit > 0 -- Filtramos errores de captura (velocidad 0)
+GROUP BY 
+    1 -- Agrupamos por la primera columna (el CASE)
+ORDER BY 
+    banda_velocidad ASC;
