@@ -234,4 +234,6 @@ GROUP BY
 ORDER BY 
     ranking_severidad ASC
 LIMIT 15;
+```
+
 
