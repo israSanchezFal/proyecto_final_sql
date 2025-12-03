@@ -57,3 +57,34 @@ La siguiente tabla destaca las combinaciones de clima e iluminación que generan
 > * **Ranking #1:** Representa pérdida total del vehículo casi garantizada, aunque son eventos poco frecuentes.
 > * **Ranking #5:** *Freezing Rain* en oscuridad es el **riesgo sistémico más alto**, combinando un costo muy elevado ($1,344) con una frecuencia masiva (casi 1,000 eventos).
 
+
+
+## 🚑🤕 2. Causas principales de los accidentes e indices de letalidad 
+
+Para identificar qué comportamientos de los conductores están asociados con los choques más graves, se construyó una consulta que:
+
+- Toma únicamente la **causa principal** del siniestro (`cause_role = 'PRIMARY'`).
+- Agrupa por la descripción de la causa (`cause_text`).
+- Calcula, para cada causa:
+  - `total_eventos`: número de choques en los que esa es la causa principal.
+  - `total_muertes`: número total de víctimas fatales.
+  - `total_heridos`: número total de personas lesionadas.
+  - `indice_letalidad`: muertes por cada 100 choques de ese tipo:
+
+    \[
+    \text{índice de letalidad} = \frac{\text{total\_muertes}}{\text{total\_eventos}} \times 100
+    \]
+
+Además, se filtran las causas con menos de 50 eventos para evitar resultados poco representativos y se ordena por `indice_letalidad` de mayor a menor, mostrando el **Top 10**.
+
+A partir de esta consulta se observa que:
+
+- Causas como **“PHYSICAL CONDITION OF DRIVER”** y **“EXCEEDING AUTHORIZED SPEED LIMIT”** presentan los **índices de letalidad más altos** (más de 1 muerte por cada 100 choques de ese tipo).
+- Otras causas, como **“DRIVING ON WRONG SIDE/WRONG WAY”**, **“UNDER THE INFLUENCE OF ALCOHOL/DRUGS”** o **“DISREGARDING TRAFFIC SIGNALS”**, combinan un **volumen muy alto de eventos** con un índice de letalidad elevado.
+- En conjunto, estos resultados sugieren que las políticas de seguridad vial deberían priorizar:
+  - el control de velocidad,
+  - la condición física y estado del conductor,
+  - y el cumplimiento de la señalización y reglas de tránsito.
+
+Este análisis convierte los datos crudos de lesiones y muertes en un atributo analítico interpretable (`indice_letalidad`), útil para priorizar intervenciones y campañas de prevención.
+
