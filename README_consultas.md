@@ -71,9 +71,7 @@ Para identificar qué comportamientos de los conductores están asociados con lo
   - `total_heridos`: número total de personas lesionadas.
   - `indice_letalidad`: muertes por cada 100 choques de ese tipo:
 
-    \[
-    \text{índice de letalidad} = \frac{\text{total\_muertes}}{\text{total\_eventos}} \times 100
-    \]
+   $$\text{Índice de Letalidad} = \left( \frac{\text{Total Muertes}}{\text{Total Accidentes de esa Causa}} \right) \times 100$$
 
 Además, se filtran las causas con menos de 50 eventos para evitar resultados poco representativos y se ordena por `indice_letalidad` de mayor a menor, mostrando el **Top 10**.
 
