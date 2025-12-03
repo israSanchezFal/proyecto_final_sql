@@ -1,6 +1,6 @@
 # Consultas 
 
-## 💸 Análisis de Impacto Económico: El Costo Invisible del Clima
+## ❄️ Cómo tiene que ver el clima con los accidentes
 
 ### 🎯 Objetivo del Análisis
 Identificar qué combinaciones de **clima e iluminación** generan los accidentes más costosos. A diferencia de la frecuencia (dónde ocurren más choques), este análisis se centra en la **severidad económica**, permitiendo a las aseguradoras y organismos públicos prever reservas de capital para condiciones específicas.
