@@ -187,10 +187,24 @@ La limpieza se diseñó como un proceso sencillo basado en cinco operaciones pri
 
 ## 1. Normalización de valores vacíos (`TRIM` + `NULLIF`)
 
-### Descripción
 Muchos campos de texto contenían cadenas vacías (`''`) o únicamente espacios.  
 Estos valores se normalizaron a `NULL` para evitar inconsistencias semánticas y facilitar el análisis posterior.
 
 ### Ejemplo
 ```sql
 NULLIF(TRIM(weather_condition), '') AS weather_condition
+```
+
+## 2. Conversión de indicadores `Y` / `N` a valores booleanos
+
+Varias columnas utilizaban indicadores tipo `Y` / `N` (o valores vacíos).
+Estos valores se transformaron a tipo BOOLEAN (`TRUE`, `FALSE`, `NULL`) para mejorar la consistencia y el modelado de datos.
+
+### Ejemplo
+```sql
+CASE
+  WHEN NULLIF(TRIM(hit_and_run_i), '') = 'Y' THEN TRUE
+  WHEN NULLIF(TRIM(hit_and_run_i), '') = 'N' THEN FALSE
+  ELSE NULL
+END AS hit_and_run
+```
