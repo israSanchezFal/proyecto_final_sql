@@ -94,7 +94,7 @@ Conecta tu base de datos en TablePlus, ya que ahí fue donde se realizaron todas
 
 Una vez dentro, abre un archivo sql vacío para poder crear la tabla. La mayoría de las columnas como TEXT para garantizar la carga segura de datos sucios o atípicos sin que se produzcan errores de casting durante la importación.
 
-```console
+```sql
 CREATE TABLE traffic_crashes(
     CRASH_RECORD_ID TEXT,
     CRASH_DATE_EST_I TEXT,
@@ -183,7 +183,23 @@ Para el desarrollo del proyecto se creó una tabla intermedia llamada `traffic_c
 
 La limpieza se diseñó como un proceso sencillo basado en cinco operaciones principales, aplicadas a distintas columnas del conjunto de datos.
 
+Lo primero que se realizó fue la creación de una nueva tabla:
+```sql
+DROP TABLE IF EXISTS traffic_crashes_clean;
 
+CREATE TABLE traffic_crashes_clean (
+crash_record_id VARCHAR,
+crash_date_est BOOLEAN,
+crash_date TIMESTAMP,
+posted_speed_limit INT,
+traffic_control_device TEXT,
+device_condition TEXT,
+weather_condition TEXT,
+lighting_condition TEXT,
+first_crash_type TEXT,
+...
+```
+Para posteriormente realizar las operaciones pertinentes.
 
 ## 1. Normalización de valores vacíos (`TRIM` + `NULLIF`)
 
@@ -255,3 +271,5 @@ UPDATE traffic_crashes_clean
 SET weather_condition = NULL
 WHERE weather_condition IN ('UNKNOWN', 'NOT APPLICABLE');
 ```
+
+Para poder completar la limipeza basta con descargar el archivo sql.
