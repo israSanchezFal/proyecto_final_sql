@@ -340,7 +340,7 @@ Esto garantiza:
 
 Con esta descomposición, el diseño alcanza Cuarta Forma Normal (4FN).
 
-## 5. Diseño final en Cuarta Forma Normal
+### 5. Diseño final en Cuarta Forma Normal
 
 El modelo final queda compuesto por las siguientes entidades:
 
@@ -356,7 +356,7 @@ Cada entidad:
 - No presenta dependencias multivaluadas no triviales
 
 
-## 7. Implementación y carga de datos
+### 6. Implementación y carga de datos
 
 La descomposición se implementó mediante scripts SQL que:
 
@@ -369,7 +369,7 @@ La descomposición se implementó mediante scripts SQL que:
 El proceso garantiza que los datos limpios se proyectan correctamente en el esquema normalizado.
 
 
-## Conclusión
+### Conclusión
 
 El diseño resultante cumple con los principios de la Cuarta Forma Normal, eliminando redundancia, evitando anomalías de actualización y proporcionando una base sólida para análisis posteriores y expansión del modelo.
 
