@@ -238,6 +238,142 @@ WHERE weather_condition IN ('UNKNOWN', 'NOT APPLICABLE');
 Para poder completar la limipeza basta con descargar el archivo sql.
 
 ---
-## Normalización
+## Normalización de Datos hasta Cuarta Forma Normal (4FN)
+
+A partir de la tabla `traffic_crashes_clean`, previamente limpiada y tipificada, se realizó un proceso de **normalización hasta Cuarta Forma Normal (4FN)** con el objetivo de eliminar redundancias, evitar anomalías de actualización y garantizar la consistencia de los datos.
+
+El proceso se desarrolló en cinco etapas: diseño intuitivo, identificación de dependencias, descomposición progresiva, diseño final en 4FN e implementación mediante scripts SQL.
+
+
+### 1. Diseño intuitivo inicial
+
+El conjunto de datos describe **accidentes de tránsito**, donde cada registro contiene información heterogénea correspondiente a:
+
+- El accidente en sí
+- Su ubicación
+- El resumen de lesiones
+- Las causas contribuyentes (primaria y secundaria)
+
+Intuitivamente, estos conceptos representan **entidades distintas**, aunque en la tabla original aparecían combinados en una sola relación.
+
+
+### 2. Identificación de dependencias funcionales
+
+A partir del análisis del dataset, se identificaron las siguientes **dependencias funcionales no triviales**:
+
+#### Dependencias funcionales principales
+
+- `crash_record_id → (todos los atributos del accidente)`
+- `crash_id → información del accidente`
+- `crash_id → información de ubicación`
+- `crash_id → resumen de lesiones`
+- `cause_id → cause_text`
+
+Estas dependencias indican que la mayoría de los atributos dependen **únicamente del identificador del accidente**, mientras que el texto de la causa depende exclusivamente de la causa en sí.
+
+
+### 3. Identificación de dependencias multivaluadas
+
+Se identificó una **dependencia multivaluada no trivial** en las causas contribuyentes:
+
+- Un accidente puede tener **más de una causa** (primaria y secundaria).
+- Las causas no dependen entre sí, sino de forma independiente del accidente.
+
+Formalmente:
+`cause_id →→ cause_text`
+
+Esto viola la Cuarta Forma Normal si se mantiene en una sola tabla, por lo que requiere una descomposición adicional.
+
+---
+
+### 3. Proceso de normalización y descomposición
+
+#### Entidad `crash` (3FN)
+
+Se creó la entidad principal `crash`, que contiene únicamente atributos que dependen **directamente del accidente**.
+
+- Llave primaria artificial: `crash_id`
+- Llave candidata natural: `crash_record_id`
+
+Esto elimina redundancia y garantiza unicidad.
+
+
+#### Entidad `crash_location` (1:1)
+
+La información de ubicación depende completamente del accidente, pero conceptualmente representa otra entidad.
+
+- Relación 1 a 1 con `crash`
+- Llave primaria y foránea: `crash_id`
+
+Esto evita repetir información espacial y mantiene cohesión semántica.
+
+
+#### Entidad `crash_injury_summary` (1:1)
+
+El resumen de lesiones es independiente del resto de los atributos del accidente y se separa en su propia entidad.
+
+- Relación 1 a 1 con `crash`
+- Llave primaria y foránea: `crash_id`
+
+Esta descomposición facilita validaciones y análisis específicos de lesiones.
+
+### Entidad `cat_contributory_cause`
+
+Las causas contribuyentes se normalizaron en un catálogo, eliminando la repetición del texto de la causa.
+
+- Llave primaria artificial: `cause_id`
+- Restricción `UNIQUE` sobre `cause_text`
+
+Esto reduce redundancia y mejora consistencia.
+
+### Entidad `crash_cause` (resolución de dependencia multivaluada)
+
+Para resolver la dependencia multivaluada de las causas, se creó una tabla pivote:
+
+- Relación N:M entre `crash` y `cat_contributory_cause`
+- Se distingue el rol de la causa (`PRIMARY`, `SECONDARY`)
+- Llave primaria compuesta: `(crash_id, cause_role)`
+
+Esto garantiza:
+- Máximo una causa primaria y una secundaria por accidente
+- Eliminación completa de la dependencia multivaluada
+
+Con esta descomposición, el diseño alcanza Cuarta Forma Normal (4FN).
+
+## 5. Diseño final en Cuarta Forma Normal
+
+El modelo final queda compuesto por las siguientes entidades:
+
+- `crash`
+- `crash_location`
+- `crash_injury_summary`
+- `cat_contributory_cause`
+- `crash_cause`
+
+Cada entidad:
+- Tiene una llave primaria artificial
+- No contiene dependencias funcionales parciales o transitivas
+- No presenta dependencias multivaluadas no triviales
+
+
+## 7. Implementación y carga de datos
+
+La descomposición se implementó mediante scripts SQL que:
+
+- Insertan datos desde `traffic_crashes_clean`
+- Evitan duplicados mediante `DISTINCT ON`
+- Mantienen integridad referencial con llaves foráneas
+- Utilizan transacciones para asegurar atomicidad
+- Evitan la generación de tuplas idénticas
+
+El proceso garantiza que los datos limpios se proyectan correctamente en el esquema normalizado.
+
+
+## Conclusión
+
+El diseño resultante cumple con los principios de la Cuarta Forma Normal, eliminando redundancia, evitando anomalías de actualización y proporcionando una base sólida para análisis posteriores y expansión del modelo.
+
+La normalización se realizó de forma intuitiva, justificada y consistente con la estructura real de los datos.
+
 
 
