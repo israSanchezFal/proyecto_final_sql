@@ -177,4 +177,20 @@ FROM traffic_crashes
 GROUP BY crash_type
 ORDER BY COUNT(*) DESC;
 ```
+# Limpieza de datos
 
+Para el desarrollo del proyecto se creó una tabla intermedia llamada `traffic_crashes_clean` con el objetivo de limpiar, normalizar y tipificar los datos provenientes de la tabla original `traffic_crashes`, sin modificar la fuente original.
+
+La limpieza se diseñó como un proceso sencillo basado en cinco operaciones principales, aplicadas a distintas columnas del conjunto de datos.
+
+
+
+## 1. Normalización de valores vacíos (`TRIM` + `NULLIF`)
+
+### Descripción
+Muchos campos de texto contenían cadenas vacías (`''`) o únicamente espacios.  
+Estos valores se normalizaron a `NULL` para evitar inconsistencias semánticas y facilitar el análisis posterior.
+
+### Ejemplo
+```sql
+NULLIF(TRIM(weather_condition), '') AS weather_condition
