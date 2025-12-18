@@ -273,3 +273,7 @@ WHERE weather_condition IN ('UNKNOWN', 'NOT APPLICABLE');
 ```
 
 Para poder completar la limipeza basta con descargar el archivo sql.
+
+# Normalización
+
+
