@@ -1,85 +1,91 @@
-BEGIN;
 
 DROP TABLE IF EXISTS crash_cause;
-DROP TABLE IF EXISTS cat_contributory_cause;
+DROP TABLE IF EXISTS cat_contributory_cause CASCADE;
 DROP TABLE IF EXISTS crash_injury_summary;
-DROP TABLE IF EXISTS crash_location;
-DROP TABLE IF EXISTS crash;
+DROP TABLE IF EXISTS crash CASCADE;
+DROP TABLE IF EXISTS crash_location CASCADE;
 
 -- Es la entidad principal
 CREATE TABLE crash (
-  crash_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  crash_record_id VARCHAR NOT NULL UNIQUE,
+    crash_id BIGINT GENERATED ALWAYS AS IDENTITY,
+    crash_record_id VARCHAR NOT NULL,
+    crash_date_est BOOLEAN,
+    crash_date TIMESTAMP NOT NULL,
+    date_police_notified TIMESTAMP NOT NULL,
 
-  crash_date_est BOOLEAN,
-  crash_date TIMESTAMP,
-  posted_speed_limit INT,
+    crash_hour INT NOT NULL,
+    crash_day_of_week INT NOT NULL,
+    crash_month INT NOT NULL,
 
-  traffic_control_device TEXT,
-  device_condition TEXT,
-  weather_condition TEXT,
-  lighting_condition TEXT,
-  first_crash_type TEXT,
-  trafficway_type TEXT,
+    posted_speed_limit INT NOT NULL,
+    traffic_control_device TEXT NOT NULL,
+    device_condition TEXT NOT NULL,
+    weather_condition TEXT,
+    lighting_condition TEXT NOT NULL,
 
-  lane_cnt INT,
-  alignment TEXT,
-  roadway_surface_cond TEXT,
-  road_defect TEXT,
-  report_type TEXT,
-  crash_type TEXT,
+    first_crash_type TEXT NOT NULL,
+    trafficway_type TEXT NOT NULL,
+    alignment TEXT NOT NULL,
+    roadway_surface_cond TEXT NOT NULL,
+    road_defect TEXT,
 
-  intersection_related BOOLEAN,
-  not_right_of_way BOOLEAN,
-  hit_and_run BOOLEAN,
+    report_type TEXT,
+    crash_type TEXT NOT NULL,
 
-  damage TEXT,
-  date_police_notified TIMESTAMP,
+    intersection_related BOOLEAN,
+    not_right_of_way BOOLEAN,
+    hit_and_run BOOLEAN,
 
-  photos_taken BOOLEAN,
-  statements_taken BOOLEAN,
-  dooring BOOLEAN,
+    damage TEXT NOT NULL,
+    photos_taken BOOLEAN,
+    statements_taken BOOLEAN,
+    dooring BOOLEAN,
 
-  work_zone BOOLEAN,
-  work_zone_type TEXT,
-  workers_present BOOLEAN,
+    work_zone BOOLEAN,
+    work_zone_type TEXT,
+    workers_present BOOLEAN,
 
-  num_units INT,
+    lane_cnt INT,
+    num_units INT NOT NULL,
 
-  crash_hour INT,
-  crash_day_of_week INT,
-  crash_month INT
+    PRIMARY KEY (crash_id),
+    UNIQUE (crash_record_id)
 );
+
 
 -- Relacion 1 a 1 (o sea hay una ubicación por accidente)
 CREATE TABLE crash_location (
-  location_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  crash_id BIGINT NOT NULL UNIQUE REFERENCES crash(crash_id),
+  crash_id BIGINT NOT NULL,
 
-  street_no INT,
+  street_no INT NOT NULL,
   street_direction TEXT,
   street_name TEXT,
   beat_of_occurrence INT,
 
   latitude NUMERIC,
   longitude NUMERIC,
-  location TEXT
+  location TEXT,
+  
+  PRIMARY KEY (crash_id),
+  FOREIGN KEY (crash_id) REFERENCES crash(crash_id)
 );
 
 -- Todo el resumen de las lesiones es por accidente
 CREATE TABLE crash_injury_summary (
-  injury_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  crash_id BIGINT NOT NULL UNIQUE REFERENCES crash(crash_id),
+  crash_id BIGINT NOT NULL,
 
   most_severe_injury TEXT,
 
   injuries_total INT,
-  injuries_fatal INT,
+  injuries_fatal INT, 
   injuries_incapacitating INT,
   injuries_non_incapacitating INT,
   injuries_reported_not_evident INT,
   injuries_no_indication INT,
-  injuries_unknown INT
+  injuries_unknown INT,
+  
+  PRIMARY KEY (crash_id),
+  FOREIGN KEY (crash_id) REFERENCES crash(crash_id)
 );
 
 -- Causas contribuyentes con un ID artificial y el texto único de cada causa, para evitar repetir ese texto múltiples veces y poder referenciarlo desde otras tablas.
@@ -90,14 +96,13 @@ CREATE TABLE cat_contributory_cause (
 
 -- Tabla pivote, para cada choque (crash_id), su causa primaria y/o secundaria.
 CREATE TABLE crash_cause (
-  crash_cause_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    crash_id BIGINT NOT NULL,
+    cause_id BIGINT NOT NULL,
+    cause_role TEXT NOT NULL CHECK (cause_role IN ('PRIMARY', 'SECONDARY')),
 
-  crash_id BIGINT NOT NULL REFERENCES crash(crash_id),
-  cause_id BIGINT NOT NULL REFERENCES cat_contributory_cause(cause_id),
-
-  cause_role TEXT NOT NULL CHECK (cause_role IN ('PRIMARY', 'SECONDARY')),
-
-  CONSTRAINT uq_crash_role UNIQUE (crash_id, cause_role)
+    PRIMARY KEY (crash_id, cause_role),
+    FOREIGN KEY (crash_id) REFERENCES crash(crash_id),
+    FOREIGN KEY (cause_id) REFERENCES cat_contributory_cause(cause_id)
 );
 
 
