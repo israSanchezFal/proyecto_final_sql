@@ -106,45 +106,7 @@ CREATE TABLE traffic_crashes(
     LIGHTING_CONDITION TEXT,
     FIRST_CRASH_TYPE TEXT,
     TRAFFICWAY_TYPE TEXT,
-    LANE_CNT TEXT,
-    ALIGNMENT TEXT,
-    ROADWAY_SURFACE_COND TEXT,
-    ROAD_DEFECT TEXT,
-    REPORT_TYPE TEXT,
-    CRASH_TYPE TEXT,
-    INTERSECTION_RELATED_I TEXT,
-    NOT_RIGHT_OF_WAY_I TEXT,
-    HIT_AND_RUN_I TEXT,
-    DAMAGE TEXT,
-    DATE_POLICE_NOTIFIED TIMESTAMP,
-    PRIM_CONTRIBUTORY_CAUSE TEXT,
-    SEC_CONTRIBUTORY_CAUSE TEXT,
-    STREET_NO TEXT,
-    STREET_DIRECTION TEXT,
-    STREET_NAME TEXT,
-    BEAT_OF_OCCURRENCE TEXT,
-    PHOTOS_TAKEN_I TEXT,
-    STATEMENTS_TAKEN_I TEXT,
-    DOORING_I TEXT,
-    WORK_ZONE_I TEXT,
-    WORK_ZONE_TYPE TEXT,
-    WORKERS_PRESENT_I TEXT,
-    NUM_UNITS TEXT,          
-    MOST_SEVERE_INJURY TEXT,
-    INJURIES_TOTAL TEXT,
-    INJURIES_FATAL TEXT,
-    INJURIES_INCAPACITATING TEXT,
-    INJURIES_NON_INCAPACITATING TEXT,
-    INJURIES_REPORTED_NOT_EVIDENT TEXT,
-    INJURIES_NO_INDICATION TEXT,
-    INJURIES_UNKNOWN TEXT,
-    CRASH_HOUR BIGINT,
-    CRASH_DAY_OF_WEEK BIGINT,
-    CRASH_MONTH BIGINT,
-    LATITUDE NUMERIC,
-    LONGITUDE NUMERIC,
-    LOCATION TEXT
-);
+    ...
 ```
 Una vez creada la tabla, realiza un “Refresh workspace” para poder visualizarla; luego, selecciónala y desde Archivo → Importar carga el dataset de Traffic Crashes de Chicago, puedes descargarlo aquí: 
 
@@ -177,6 +139,7 @@ FROM traffic_crashes
 GROUP BY crash_type
 ORDER BY COUNT(*) DESC;
 ```
+---
 # Limpieza de datos
 
 Para el desarrollo del proyecto se creó una tabla intermedia llamada `traffic_crashes_clean` con el objetivo de limpiar, normalizar y tipificar los datos provenientes de la tabla original `traffic_crashes`, sin modificar la fuente original.
