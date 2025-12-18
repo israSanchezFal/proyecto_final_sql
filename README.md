@@ -155,14 +155,14 @@ En la ventana de importación, elige importar dentro de traffic_crashes y, para 
 Para confirmar que la carga quedó bien, se realizará un análisis preliminar enfocado en la estructura y consistencia general de la tabla más que en la interpretación de los datos.
 
 1. Verificación de Integridad considerando y confirmando CRASH_RECORD_ID como clave.
-```console
+```sql
 SELECT
     COUNT(*) AS total_rows,
     COUNT(DISTINCT crash_record_id) AS distinct_id
 FROM traffic_crashes;
 ```
 2. Conteo de nulos
-```console
+```sql
 SELECT COUNT(*) FILTER (WHERE crash_date IS NULL) AS null_crash_date,
        COUNT(*) FILTER (WHERE posted_speed_limit IS NULL) AS null_speed_limit,
        COUNT(*) FILTER (WHERE weather_condition IS NULL) AS null_weather,
@@ -171,7 +171,7 @@ SELECT COUNT(*) FILTER (WHERE crash_date IS NULL) AS null_crash_date,
 FROM traffic_crashes; 
 ```
 3. Conteo por tipo de choque
-```console
+```sql
 SELECT crash_type, COUNT(*) 
 FROM traffic_crashes
 GROUP BY crash_type
@@ -207,4 +207,51 @@ CASE
   WHEN NULLIF(TRIM(hit_and_run_i), '') = 'N' THEN FALSE
   ELSE NULL
 END AS hit_and_run
+```
+
+## 3. Validación y conversión segura de valores numéricos
+
+Algunas columnas numéricas venían almacenadas como texto y podían contener valores no válidos.
+Antes de convertirlas a tipo INT, se validó que el contenido incluyera únicamente dígitos.
+
+### Ejemplo
+```sql
+CASE
+  WHEN NULLIF(TRIM(posted_speed_limit), '') ~ '^[0-9]+$'
+  THEN TRIM(posted_speed_limit)::INT
+  ELSE NULL
+END AS posted_speed_limit
+```
+
+## 4. Validación de rangos lógicos
+
+Para variables temporales se verificó que los valores se encontraran dentro de rangos razonables.
+Los valores fuera de rango se transformaron a `NULL`.
+
+### Ejemplo
+```sql
+CASE
+  WHEN crash_hour BETWEEN 0 AND 23
+  THEN crash_hour::INT
+  ELSE NULL
+END AS crash_hour
+```
+
+## 5. Limpieza de valores inválidos o no informativos
+
+Se identificaron valores que, aunque no eran técnicamente nulos, no aportaban información útil para el análisis y se normalizaron a `NULL`.
+
+### Ejemplos
+#### Coordenadas
+```sql
+CASE
+  WHEN latitude = 0 OR latitude IS NULL THEN NULL
+  ELSE latitude
+END AS latitude
+```
+#### Categorías
+```sql
+UPDATE traffic_crashes_clean
+SET weather_condition = NULL
+WHERE weather_condition IN ('UNKNOWN', 'NOT APPLICABLE');
 ```
