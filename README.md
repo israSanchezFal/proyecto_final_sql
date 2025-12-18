@@ -140,7 +140,7 @@ GROUP BY crash_type
 ORDER BY COUNT(*) DESC;
 ```
 ---
-# Limpieza de datos
+## Limpieza de datos
 
 Para el desarrollo del proyecto se creó una tabla intermedia llamada `traffic_crashes_clean` con el objetivo de limpiar, normalizar y tipificar los datos provenientes de la tabla original `traffic_crashes`, sin modificar la fuente original.
 
@@ -164,22 +164,22 @@ first_crash_type TEXT,
 ```
 Para posteriormente realizar las operaciones pertinentes.
 
-## 1. Normalización de valores vacíos (`TRIM` + `NULLIF`)
+### 1. Normalización de valores vacíos (`TRIM` + `NULLIF`)
 
 Muchos campos de texto contenían cadenas vacías (`''`) o únicamente espacios.  
 Estos valores se normalizaron a `NULL` para evitar inconsistencias semánticas y facilitar el análisis posterior.
 
-### Ejemplo
+#### Ejemplo
 ```sql
 NULLIF(TRIM(weather_condition), '') AS weather_condition
 ```
 
-## 2. Conversión de indicadores `Y` / `N` a valores booleanos
+### 2. Conversión de indicadores `Y` / `N` a valores booleanos
 
 Varias columnas utilizaban indicadores tipo `Y` / `N` (o valores vacíos).
 Estos valores se transformaron a tipo BOOLEAN (`TRUE`, `FALSE`, `NULL`) para mejorar la consistencia y el modelado de datos.
 
-### Ejemplo
+#### Ejemplo
 ```sql
 CASE
   WHEN NULLIF(TRIM(hit_and_run_i), '') = 'Y' THEN TRUE
@@ -188,12 +188,12 @@ CASE
 END AS hit_and_run
 ```
 
-## 3. Validación y conversión segura de valores numéricos
+### 3. Validación y conversión segura de valores numéricos
 
 Algunas columnas numéricas venían almacenadas como texto y podían contener valores no válidos.
 Antes de convertirlas a tipo INT, se validó que el contenido incluyera únicamente dígitos.
 
-### Ejemplo
+#### Ejemplo
 ```sql
 CASE
   WHEN NULLIF(TRIM(posted_speed_limit), '') ~ '^[0-9]+$'
@@ -202,12 +202,12 @@ CASE
 END AS posted_speed_limit
 ```
 
-## 4. Validación de rangos lógicos
+### 4. Validación de rangos lógicos
 
 Para variables temporales se verificó que los valores se encontraran dentro de rangos razonables.
 Los valores fuera de rango se transformaron a `NULL`.
 
-### Ejemplo
+#### Ejemplo
 ```sql
 CASE
   WHEN crash_hour BETWEEN 0 AND 23
@@ -216,19 +216,19 @@ CASE
 END AS crash_hour
 ```
 
-## 5. Limpieza de valores inválidos o no informativos
+### 5. Limpieza de valores inválidos o no informativos
 
 Se identificaron valores que, aunque no eran técnicamente nulos, no aportaban información útil para el análisis y se normalizaron a `NULL`.
 
-### Ejemplos
-#### Coordenadas
+#### Ejemplos
+##### Coordenadas
 ```sql
 CASE
   WHEN latitude = 0 OR latitude IS NULL THEN NULL
   ELSE latitude
 END AS latitude
 ```
-#### Categorías
+##### Categorías
 ```sql
 UPDATE traffic_crashes_clean
 SET weather_condition = NULL
@@ -237,6 +237,7 @@ WHERE weather_condition IN ('UNKNOWN', 'NOT APPLICABLE');
 
 Para poder completar la limipeza basta con descargar el archivo sql.
 
-# Normalización
+---
+## Normalización
 
 
