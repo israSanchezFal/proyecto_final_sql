@@ -286,9 +286,9 @@ Esto viola la Cuarta Forma Normal si se mantiene en una sola tabla, por lo que r
 
 ---
 
-### 3. Proceso de normalización y descomposición
+### 4. Proceso de normalización y descomposición
 
-#### Entidad `crash` (3FN)
+#### - Entidad `crash` (3FN)
 
 Se creó la entidad principal `crash`, que contiene únicamente atributos que dependen **directamente del accidente**.
 
@@ -298,7 +298,7 @@ Se creó la entidad principal `crash`, que contiene únicamente atributos que de
 Esto elimina redundancia y garantiza unicidad.
 
 
-#### Entidad `crash_location` (1:1)
+#### - Entidad `crash_location` (1:1)
 
 La información de ubicación depende completamente del accidente, pero conceptualmente representa otra entidad.
 
@@ -308,7 +308,7 @@ La información de ubicación depende completamente del accidente, pero conceptu
 Esto evita repetir información espacial y mantiene cohesión semántica.
 
 
-#### Entidad `crash_injury_summary` (1:1)
+#### - Entidad `crash_injury_summary` (1:1)
 
 El resumen de lesiones es independiente del resto de los atributos del accidente y se separa en su propia entidad.
 
@@ -317,7 +317,7 @@ El resumen de lesiones es independiente del resto de los atributos del accidente
 
 Esta descomposición facilita validaciones y análisis específicos de lesiones.
 
-### Entidad `cat_contributory_cause`
+#### - Entidad `cat_contributory_cause`
 
 Las causas contribuyentes se normalizaron en un catálogo, eliminando la repetición del texto de la causa.
 
@@ -326,7 +326,7 @@ Las causas contribuyentes se normalizaron en un catálogo, eliminando la repetic
 
 Esto reduce redundancia y mejora consistencia.
 
-### Entidad `crash_cause` (resolución de dependencia multivaluada)
+#### - Entidad `crash_cause` (resolución de dependencia multivaluada)
 
 Para resolver la dependencia multivaluada de las causas, se creó una tabla pivote:
 
