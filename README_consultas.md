@@ -91,3 +91,36 @@ Este análisis convierte los datos crudos de lesiones y muertes en un atributo a
 ## 🏎️💨 3. Análisis de 'Hit and Run': Distribución y peso porcentual
 ### 🎯 Objetivo del Análisis
 Determinar la gravedad de los accidentes donde el responsable se da a la fuga (Hit and Run). El objetivo es entender si estos incidentes suelen ser colisiones menores o si existe una correlación entre daños severos y la decisión de abandonar la escena.
+### 🧠 Metodología y Lógica SQL
+* **Filtrar:** Necesitamos filtrar los datos de manera que solamente manejemos el conjunto de accidentes en los cuales se dieron a la fuga, por lo que seleccionaremos exclusivamente los registros donde hit_and_run = 'TRUE' .
+* **Calculo porcentual:** Aplicamos la funcion de ventana SUM(COUNT(*)) OVER () para obtener el total de fugas "sin agrupar", lo que nos permite calcular el total de fugas y el porcentaje de cada categoria de daño sobre el conjunto.
+*  **Precision:** Casteamos a numeric para segurar decimales precisos.
+
+WITH fugas_por_costo AS (
+    SELECT 
+        damage AS tipo_daño,
+        COUNT(*) AS total_casos,
+        SUM(COUNT(*)) OVER () AS total_fugas_global
+    FROM crash
+    WHERE hit_and_run = 'TRUE'
+    GROUP BY damage
+)
+SELECT 
+    tipo_daño,
+    total_casos,
+    ROUND((total_casos::numeric / NULLIF(total_fugas_global, 0)) * 100, 2) AS porcentaje
+FROM fugas_por_costo
+ORDER BY total_casos DESC;
+
+### 🛡️ Estrategias Basadas en la Severidad de las Fugas
+a) Para Daños Mayores (Over $1,500)
+Si el porcentaje en esta categoría es alto, indica que los conductores huyen para evitar consecuencias legales graves.
+Implementación de Cámaras: Instalar lectores de matrículas en intersecciones con alta incidencia de fugas de alto costo para rastrear vehículos en tiempo real tras el impacto.
+Agravamiento de Penas: Proponer reformas donde el "abandono de escena" en accidentes de alto costo tenga una penalización superior a la del propio accidente, eliminando el "incentivo" de huir.
+Botón de Reporte Inmediato.
+
+b) Para Daños Menores ($500 or Less)
+   
+Simplificación del Reporte: Crear un portal digital donde los involucrados puedan intercambiar datos y fotos sin necesidad de esperar a una patrulla por horas (lo cual motiva la fuga en choques leves).
+
+Seguros de "Responsabilidad Civil" Accesibles: Campañas de concientización sobre seguros de bajo costo que cubran daños a terceros, reduciendo el miedo del conductor a afrontar el gasto.
