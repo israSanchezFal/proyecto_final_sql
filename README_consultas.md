@@ -10,7 +10,7 @@ Dado que el costo exacto es una variable discreta por rangos, creamos un **Atrib
 * **Transformación:** Convertimos las categorías de texto (`OVER $1,500`) a valores numéricos ponderados mediante una expresión `CASE`.
 * **Ranking:** Utilizamos la función de ventana `DENSE_RANK()` para clasificar las condiciones de mayor a menor impacto financiero, sin saltos en la numeración.
 
-```console
+```sql
 -- Consulta: Ranking de Severidad Económica (Top 15)
 SELECT 
     c.weather_condition,
@@ -96,7 +96,7 @@ Determinar la gravedad de los accidentes donde el responsable se da a la fuga (H
 * **Calculo porcentual:** Aplicamos la funcion de ventana SUM(COUNT(*)) OVER () para obtener el total de fugas "sin agrupar", lo que nos permite calcular el total de fugas y el porcentaje de cada categoria de daño sobre el conjunto.
 *  **Precision:** Casteamos a numeric para segurar decimales precisos.
 
-```console
+```sql
 WITH fugas_por_costo AS (
     SELECT 
         damage AS tipo_daño,
