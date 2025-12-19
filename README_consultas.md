@@ -96,6 +96,7 @@ Determinar la gravedad de los accidentes donde el responsable se da a la fuga (H
 * **Calculo porcentual:** Aplicamos la funcion de ventana SUM(COUNT(*)) OVER () para obtener el total de fugas "sin agrupar", lo que nos permite calcular el total de fugas y el porcentaje de cada categoria de daño sobre el conjunto.
 *  **Precision:** Casteamos a numeric para segurar decimales precisos.
 
+```console
 WITH fugas_por_costo AS (
     SELECT 
         damage AS tipo_daño,
@@ -111,6 +112,7 @@ SELECT
     ROUND((total_casos::numeric / NULLIF(total_fugas_global, 0)) * 100, 2) AS porcentaje
 FROM fugas_por_costo
 ORDER BY total_casos DESC;
+```
 
 ### 🛡️ Estrategias Basadas en la Severidad de las Fugas
 a) Para Daños Mayores (Over $1,500)
