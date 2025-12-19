@@ -87,3 +87,7 @@ A partir de esta consulta se observa que:
 Este análisis convierte los datos crudos de lesiones y muertes en un atributo analítico interpretable (`indice_letalidad`), útil para priorizar intervenciones y campañas de prevención.
 
 <img width="957" height="277" alt="Captura de pantalla 2025-12-03 a la(s) 11 18 37 a m" src="https://github.com/user-attachments/assets/21b41976-f251-45ec-9ec8-0e59afcdec05" />
+
+## 🏎️💨 3. Análisis de 'Hit and Run': Distribución y peso porcentual
+### 🎯 Objetivo del Análisis
+Determinar la gravedad de los accidentes donde el responsable se da a la fuga (Hit and Run). El objetivo es entender si estos incidentes suelen ser colisiones menores o si existe una correlación entre daños severos y la decisión de abandonar la escena.
