@@ -144,9 +144,25 @@ Seguros de "Responsabilidad Civil" Accesibles: Campañas de concientización sob
 ### 🎯 Objetivo del Análisis
 Identificar los meses con mayor volumen de accidentes por año.
 Con una subconsulta se agrupan los datos por mes y por año y, con ayuda de funciones de ventana, se calcula el total de choques anuales y clasifica por frecuencia de forma descendente. Finalmente se extrae el primer lugar de cada periodo **anual**.
-```sql
 
-```
+| Año | Mes | Choques del Mes | Choques del Año | % del Año |
+|----:|----:|----------------:|----------------:|----------:|
+| 2013 | 6  | 1     | 2     | 50.00 |
+| 2013 | 3  | 1     | 2     | 50.00 |
+| 2014 | 1  | 2     | 6     | 33.33 |
+| 2015 | 10 | 2,808 | 9,831 | 28.56 |
+| 2016 | 12 | 5,052 | 44,297 | 11.40 |
+| 2017 | 12 | 10,108 | 83,786 | 12.06 |
+| 2018 | 5  | 10,714 | 118,951 | 9.01 |
+| 2019 | 5  | 10,709 | 117,764 | 9.09 |
+| 2020 | 8  | 9,161 | 92,095 | 9.95 |
+| 2021 | 6  | 10,335 | 108,766 | 9.50 |
+| 2022 | 10 | 9,910 | 108,411 | 9.14 |
+| 2023 | 5  | 10,142 | 110,752 | 9.16 |
+| 2024 | 5  | 10,741 | 112,050 | 9.59 |
+| 2025 | 8  | 10,188 | 92,581 | 11.00 |
+
+
 ### 💡Acciones estrategicas
 * Optimización Operativa: Ajustar los roles de patrullaje y turnos de servicios de emergencia para maximizar la cobertura durante los meses que concentran el mayor porcentaje de accidentes anuales.
 
