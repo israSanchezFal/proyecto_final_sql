@@ -93,7 +93,7 @@ Este análisis convierte los datos crudos de lesiones y muertes en un atributo a
 Determinar la gravedad de los accidentes donde el responsable se da a la fuga (Hit and Run). El objetivo es entender si estos incidentes suelen ser colisiones menores o si existe una correlación entre daños severos y la decisión de abandonar la escena.
 ### 🧠 Metodología y Lógica SQL
 * **Filtrar:** Necesitamos filtrar los datos de manera que solamente manejemos el conjunto de accidentes en los cuales se dieron a la fuga, por lo que seleccionaremos exclusivamente los registros donde hit_and_run = 'TRUE' .
-* **Calculo porcentual:** Aplicamos la funcion de ventana SUM(COUNT(*)) OVER () para obtener el total de fugas "sin agrupar", lo que nos permite calcular el total de fugas y el porcentaje de cada categoria de daño sobre el conjunto.
+* **Calculo porcentual:** Aplicamos la funcion de ventana `SUM(COUNT(*)) OVER ()` para obtener el total de fugas "sin agrupar", lo que nos permite calcular el total de fugas y el porcentaje de cada categoria de daño sobre el conjunto.
 *  **Precision:** Casteamos a numeric para segurar decimales precisos.
 
 ```sql
@@ -126,3 +126,37 @@ b) Para Daños Menores ($500 or Less)
 Simplificación del Reporte: Crear un portal digital donde los involucrados puedan intercambiar datos y fotos sin necesidad de esperar a una patrulla por horas (lo cual motiva la fuga en choques leves).
 
 Seguros de "Responsabilidad Civil" Accesibles: Campañas de concientización sobre seguros de bajo costo que cubran daños a terceros, reduciendo el miedo del conductor a afrontar el gasto.
+
+## 📅📈 Meses con Mayor Siniestralidad y Peso Anual
+### 🎯 Objetivo del Análisis
+Identificar los meses con mayor volumen de accidentes por año.
+Con una subconsulta se agrupan los datos por mes y por año y, con ayuda de funciones de ventana, se calcula el total de choques anuales y clasifica por frecuencia de forma descendente. Finalmente se extrae el primer lugar de cada periodo **anual**.
+```sql
+WITH datos_por_mes AS (
+    SELECT 
+        EXTRACT(YEAR FROM crash_date) AS anio, 
+        EXTRACT(MONTH FROM crash_date) AS mes, 
+        COUNT(*) AS choques_mes
+    FROM crash
+    GROUP BY anio, mes
+),
+ranking_totales AS (
+    SELECT 
+        anio, mes, choques_mes, 
+        SUM(choques_mes) OVER (PARTITION BY anio) AS choques_anio, 
+        RANK() OVER (PARTITION BY anio ORDER BY choques_mes DESC) AS ranking_mes
+    FROM datos_por_mes
+)
+SELECT 
+    anio, mes, choques_mes, choques_anio,
+    ROUND((choques_mes::numeric / NULLIF(choques_anio, 0)) * 100, 2) AS porcentaje_del_anio 
+FROM ranking_totales
+WHERE ranking_mes = 1
+ORDER BY anio;
+```
+### 💡Acciones estrategicas
+* Optimización Operativa: Ajustar los roles de patrullaje y turnos de servicios de emergencia para maximizar la cobertura durante los meses que concentran el mayor porcentaje de accidentes anuales.
+
+* Mantenimiento Preventivo de Vías: Programar la renovación de señalización antes de periodos criticos, asegurando que la infraestructura esté en óptimas condiciones.
+
+* Alertas Basadas en Datos: Ejecutar campañas de comunicación focalizadas en los factores de riesgo específicos del mes detectado.
