@@ -1,6 +1,6 @@
 # Consultas 
 
-## ❄️ 1. ¿Cómo tiene que ver el clima con los accidentes?
+## ❄️ ¿Cómo tiene que ver el clima con los accidentes?
 
 ### 🎯 Objetivo del Análisis
 Identificar qué combinaciones de **clima e iluminación** generan los accidentes más costosos. A diferencia de la frecuencia (dónde ocurren más choques), este análisis se centra en la **severidad económica**, permitiendo a las aseguradoras y organismos públicos prever reservas de capital para condiciones específicas.
@@ -59,7 +59,7 @@ La siguiente tabla destaca las combinaciones de clima e iluminación que generan
 
 
 
-## 🚑🤕 2. Causas principales de los accidentes e indices de letalidad 
+## 🚑🤕 Causas principales de los accidentes e indices de letalidad 
 
 Para identificar qué comportamientos de los conductores están asociados con los choques más graves, se construyó una consulta que:
 
@@ -88,7 +88,7 @@ Este análisis convierte los datos crudos de lesiones y muertes en un atributo a
 
 <img width="957" height="277" alt="Captura de pantalla 2025-12-03 a la(s) 11 18 37 a m" src="https://github.com/user-attachments/assets/21b41976-f251-45ec-9ec8-0e59afcdec05" />
 
-## 🏎️💨 6. Análisis de 'Hit and Run': Distribución y peso porcentual
+## 🏎️💨 Análisis de 'Hit and Run': Distribución y peso porcentual
 ### 🎯 Objetivo del Análisis
 Determinar la gravedad de los accidentes donde el responsable se da a la fuga (Hit and Run). El objetivo es entender si estos incidentes suelen ser colisiones menores o si existe una correlación entre daños severos y la decisión de abandonar la escena.
 ### 🧠 Metodología y Lógica SQL
