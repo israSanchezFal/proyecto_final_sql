@@ -90,7 +90,7 @@ Este análisis convierte los datos crudos de lesiones y muertes en un atributo a
 
 ## 🛣️ La Calle más Peligrosa: Ranking y Contribución
 ### 🎯 Objetivo del Análisis
-Identificar las zonas que concentran la mayor cantidad de accidentes de acuerdo a los registros historicos de la base(desde 2013). De ésta consulta no se espera encontrar puntos criticos aislados (independientes entre sí). Queremos un **patrón** repetitivo de las caracteristicas en común que podrían estarse generalizando en las zonas.
+Identificar las zonas que concentran la mayor cantidad de accidentes de acuerdo a los registros historicos de la base(desde 2013). 
 ### 🧠 Metodología y Lógica SQL
 Agrupamos los accidentes por nombre de la calle y ,con una funcion de ventana, obtenemos la suma total de de choques de la ciudad para luego calcular los porcentajes por calle. Finalmente, usamos `RANK()` para extraer las 10 zonas de mayor urgencia (se tuvo en mente los empates).
 
@@ -109,11 +109,9 @@ Agrupamos los accidentes por nombre de la calle y ,con una funcion de ventana, o
 
 
 ### 🛠️ Plan de Acción y Medidas de Prevención
-* **Análisis de Características Comunes:** Estudiar si estas 10 calles comparten problemas de infraestructura (como mala iluminación o falta de señales reflectantes) para aplicar una solución estandarizada en todas ellas.
 
 * **Focalización de Presupuesto:** Priorizar estas vialidades en los programas de mantenimiento, ya que intervenir el Top 10 tiene un impacto masivo en la reducción del porcentaje total de accidentes de la ciudad.
-
-* **Vigilancia por Patrones:** Implementar radares de velocidad y operativos de tránsito en estos puntos, dado que presentan comportamientos de riesgo que se repiten de forma constante.
+* **Vigilancia por Patrones:** Implementar radares de velocidad y operativos de tránsito en estos puntos.
 
 ## 🏎️💨 Análisis de 'Hit and Run': Distribución y peso porcentual
 ### 🎯 Objetivo del Análisis
@@ -166,12 +164,12 @@ Con una subconsulta se agrupan los datos por mes y por año y, con ayuda de func
 | 2025 | 8  | 10,188 | 92,581 | 11.00 |
 
 
-### 💡Acciones estrategicas
-* Optimización Operativa: Ajustar los roles de patrullaje y turnos de servicios de emergencia para maximizar la cobertura durante los meses que concentran el mayor porcentaje de accidentes anuales.
+### 💡Acciones estrategicas (para los meses repetitivos como MAYO, DICIEMBRE y OCTUBRE)
+* **Optimización Operativa:** Ajustar los roles de patrullaje y turnos de servicios de emergencia para maximizar la cobertura durante los meses que concentran el mayor porcentaje de accidentes anuales.
 
-* Mantenimiento Preventivo de Vías: Programar la renovación de señalización antes de periodos criticos, asegurando que la infraestructura esté en óptimas condiciones.
+* **Mantenimiento Preventivo de Vías:** Programar la renovación de señalización antes de periodos criticos, asegurando que la infraestructura esté en óptimas condiciones.
 
-* Alertas Basadas en Datos: Ejecutar campañas de comunicación focalizadas en los factores de riesgo específicos del mes detectado.
+* **Alertas Basadas en Datos:** Ejecutar campañas de comunicación focalizadas en los factores de riesgo específicos del mes detectado.
 
 ## 📍🕒 Horarios Críticos por Zona
 ### 🎯 Objetivo del Análisis
