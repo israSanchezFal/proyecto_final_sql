@@ -87,6 +87,8 @@ A partir de esta consulta se observa que:
 Este análisis convierte los datos crudos de lesiones y muertes en un atributo analítico interpretable (`indice_letalidad`), útil para priorizar intervenciones y campañas de prevención.
 
 <img width="957" height="277" alt="Captura de pantalla 2025-12-03 a la(s) 11 18 37 a m" src="https://github.com/user-attachments/assets/21b41976-f251-45ec-9ec8-0e59afcdec05" />
+## 🛣️ La Calle más Peligrosa: Ranking y Contribución
+
 
 ## 🏎️💨 Análisis de 'Hit and Run': Distribución y peso porcentual
 ### 🎯 Objetivo del Análisis
@@ -160,3 +162,39 @@ ORDER BY anio;
 * Mantenimiento Preventivo de Vías: Programar la renovación de señalización antes de periodos criticos, asegurando que la infraestructura esté en óptimas condiciones.
 
 * Alertas Basadas en Datos: Ejecutar campañas de comunicación focalizadas en los factores de riesgo específicos del mes detectado.
+
+## 📍🕒 Horarios Críticos por Zona
+### 🎯 Objetivo del Análisis
+Identificar el momento exacto de mayor riesgo en cada sector. No todas las zonas son peligrosas a la misma hora; este análisis nos dice cuándo y dónde debemos reforzar la seguridad para prevenir accidentes de manera estratégica.
+### 🧠 Metodología y Lógica SQL
+Unimos ( `JOIN` ) crash con crash_location para obtener las zonas de los choques, y como primer subconsulta seleccionamos la zona, nombre de la calle, hora y contamos el total de choques. La segunda subconsulta usa función de ventana para que el sistema elija automáticamente solo la hora con más choques de cada lugar, enfocandonos en las zonas problemáticas.
+
+```sql
+WITH zona_y_hora AS (
+    SELECT 
+        cl.beat_of_occurrence AS zona,
+        cl.street_name AS nombre_calle,
+        c.crash_hour AS hora,
+        COUNT(*) AS total_choques
+    FROM crash c
+    JOIN crash_location cl ON c.crash_id = cl.crash_id
+    GROUP BY cl.beat_of_occurrence, cl.street_name, c.crash_hour
+),
+ranking_horario AS (
+    SELECT 
+        zona, nombre_calle, hora, total_choques, 
+        RANK() OVER (PARTITION BY zona ORDER BY total_choques DESC) AS ranking
+    FROM zona_y_hora
+)
+SELECT 
+    zona, nombre_calle, hora AS hora_mas_peligrosa, total_choques
+FROM ranking_horario
+WHERE ranking = 1 
+ORDER BY zona ASC;
+```
+### 🚀 Estrategias de Intervención y Respuesta
+* **Vigilancia**: Programar patrullajes preventivos que coincidan con la "hora pico" de cada calle, asegurando presencia policial en el momento de mayor vulnerabilidad.
+
+* **Semáforos**: Ajustar los tiempos de los semáforos en avenidas conflictivas durante las horas detectadas para calmar el flujo de tráfico y evitar colisiones.
+
+* **Iluminación**: En las zonas donde la hora más peligrosa sea nocturna, priorizar la revisión de luminarias para garantizar que los conductores tengan visibilidad total.
