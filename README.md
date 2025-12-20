@@ -375,5 +375,65 @@ El diseño resultante cumple con los principios de la Cuarta Forma Normal, elimi
 
 La normalización se realizó de forma intuitiva, justificada y consistente con la estructura real de los datos.
 
+---
+### Creación de API
+
+En esta parte del proyecto se realizó la creación de una API utilizando FastAPI.
+Esta API nos permite conectarnos a la base de datos que ya habíamos diseñado y normalizado previamente, y trabajar con la información de una forma más ordenada.
+Es la primera vez que se realiza una API en el proyecto, por lo que el enfoque fue mantener las cosas simples y funcionales, sin buscar una estructura demasiado compleja.
+
+#### ¿Para qué funciona?
+La API se creó con el objetivo de:
+- Poder insertar datos en las tablas.
+- Consultar la información almacenada.
+- Modificar registros existentes.
+- Eliminar registros cuando sea necesario.
+Además, se utilizaron algunos endpoints para ejecutar consultas más complejas, de forma que los resultados pudieran obtenerse directamente desde la API y no solo desde la base de datos.
+La API funciona como un intermediario entre la base de datos y el usuario.
+
+#### ¿Cómo se utiliza?
+
+Una vez que los archivos están listos, la API se ejecuta desde la terminal.
+Primero, se entra a la carpeta donde se encuentra el archivo main.py.
+Después, se corre el siguiente comando:
+```console
+uvicorn main:app --reload
+```
+
+Al hacer esto, la API se levanta localmente y queda disponible en la dirección que marca en la respuesta del comando.
+
+FastAPI genera automáticamente una página donde se pueden ver y probar los endpoints.
+Esta página se puede abrir desde el navegador en:
+```console
+http://127.0.0.1:8000/docs
+```
+Desde ahí es posible:
+- Ver qué operaciones existen.
+- Revisar qué datos recibe cada endpoint.
+- Probar las operaciones sin necesidad de usar otras herramientas.
+Esto facilitó mucho las pruebas durante el desarrollo.
+
+####Archivos que se utilizan
+
+Para la creación de la API se trabajó principalmente con los siguientes archivos:
+- `main.py`
+Es el archivo principal.
+Aquí se crea la aplicación con FastAPI y se definen todos los endpoints.
+Las operaciones CRUD siguen siempre la misma estructura, por lo que una vez entendida una, las demás funcionan de manera similar.
+- `database.py`
+En este archivo se configura la conexión a la base de datos.
+También se define la forma en la que la API obtiene una sesión para comunicarse con PostgreSQL.
+- `models_final.py`
+Contiene los modelos que representan las tablas de la base de datos.
+Estos modelos reflejan el diseño normalizado y ayudan a que la API sepa cómo guardar y leer los datos.
+- `schemas.py`
+Aquí se definen los esquemas que se usan para validar la información que entra a la API.
+De esta forma se controla qué campos son obligatorios y cuáles pueden quedar vacíos.
+
+
+#### Consultas desde la API
+Además de las operaciones básicas, se agregaron algunos endpoints que ejecutan consultas directamente en SQL desde la API.
+Estas consultas permiten obtener información resumida o agrupada, sin necesidad de escribir la consulta manualmente cada vez.
+Esto ayudó a ver cómo la API también puede servir para consultar datos, no solo para modificarlos.
 
 
