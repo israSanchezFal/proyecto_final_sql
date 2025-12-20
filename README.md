@@ -90,9 +90,9 @@ CREATE DATABASE proyecto_final_db;
 \c proyecto_final_db;
 ```
 
-Conecta tu base de datos en TablePlus, ya que ahí fue donde se realizaron todas las operaciones siguientes. El procedimiento es intuitivo, solo debes de llenar los espacios que estén vacíos después de escojer la opción "Creat Connection". En nuestro caso escogimos el nombre de proyecto_final_db, si se le es más fácil, escoja el mismo nombre.
+Se conecta la base de datos en TablePlus, ya que ahí fue donde se realizaron todas las operaciones siguientes. El procedimiento es intuitivo, solo se llenaron los espacios que estaban vacíos después de escojer la opción "Creat Connection". En nuestro caso escogimos el nombre de proyecto_final_db.
 
-Una vez dentro, abre un archivo sql vacío para poder crear la tabla. La mayoría de las columnas como TEXT para garantizar la carga segura de datos sucios o atípicos sin que se produzcan errores de casting durante la importación.
+Una vez dentro, se abre un archivo sql vacío para poder crear la tabla. La mayoría de las columnas como TEXT para garantizar la carga segura de datos sucios o atípicos sin que se produzcan errores de casting durante la importación.
 
 ```sql
 CREATE TABLE traffic_crashes(
@@ -108,11 +108,11 @@ CREATE TABLE traffic_crashes(
     TRAFFICWAY_TYPE TEXT,
     ...
 ```
-Una vez creada la tabla, realiza un “Refresh workspace” para poder visualizarla; luego, selecciónala y desde Archivo → Importar carga el dataset de Traffic Crashes de Chicago, puedes descargarlo aquí: 
+Una vez creada la tabla, se realiza un “Refresh workspace” para poder visualizarla; luego, se selecciona y desde Archivo → Importar carga el dataset de Traffic Crashes de Chicago, se puede descargar aquí: 
 
 https://data.cityofchicago.org/Transportation/Traffic-Crashes-Crashes/85ca-t3if/about_data
 
-En la ventana de importación, elige importar dentro de traffic_crashes y, para asegurar el mapeo correcto, selecciona “Match Columns by Name – Case Insensitive” y después “Import”. 
+En la ventana de importación, se elige importar dentro de traffic_crashes y, para asegurar el mapeo correcto, se selecciona “Match Columns by Name – Case Insensitive” y después “Import”. 
 
 Para confirmar que la carga quedó bien, se realizará un análisis preliminar enfocado en la estructura y consistencia general de la tabla más que en la interpretación de los datos.
 
