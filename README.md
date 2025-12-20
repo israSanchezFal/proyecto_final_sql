@@ -466,7 +466,7 @@ DB_USER=postgres
 DB_PASSWORD=1234
 ```
 
-####Levantar el API
+#### Levantar el API
 
 Dentro de nuestro ambiento y en la terminal hacemos:
 
@@ -553,9 +553,49 @@ Al concluir con el proceso de la creación de los modelos, esquemas y las operac
 Además de las operaciones básicas, se agregaron algunos endpoints que ejecutan consultas directamente en SQL desde la API.
 Estas consultas permiten obtener información resumida o agrupada, sin necesidad de escribir la consulta manualmente cada vez.
 Esto ayudó a ver cómo la API también puede servir para consultar datos, no solo para modificarlos.
+Un ejemplo de nuestras consultas fue:
+```sql
+@app.get("/consultas/letalidad")
+def top_letalidad_por_causa(
+    min_events: int = Query(50, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+    ):
+    sql = text("""
+        SELECT 
+            cat.cause_text AS causa_principal,
+            COUNT(c.crash_id) AS total_eventos,
+            COALESCE(SUM(cis.injuries_fatal), 0) AS total_muertes,
+            COALESCE(SUM(cis.injuries_total), 0) AS total_heridos,
+            ROUND(
+                (COALESCE(SUM(cis.injuries_fatal), 0)::numeric / NULLIF(COUNT(c.crash_id), 0)) * 100,
+            4) AS indice_letalidad
+        FROM 
+            public.crash c
+        JOIN 
+            public.crash_cause cc ON c.crash_id = cc.crash_id
+        JOIN 
+            public.cat_contributory_cause cat ON cc.cause_id = cat.cause_id
+        JOIN 
+            public.crash_injury_summary cis ON c.crash_id = cis.crash_id
+        WHERE 
+            cc.cause_role = 'PRIMARY'
+        GROUP BY 
+            cat.cause_text
+        HAVING 
+            COUNT(c.crash_id) > :min_events
+        ORDER BY 
+            indice_letalidad DESC
+        LIMIT :limit;
+    """)
 
+    rows = db.execute(
+        sql,
+        {"min_events": min_events, "limit": limit}
+    ).mappings().all()
 
-
-
-
-
+    return {
+        "results": [dict(r) for r in rows],
+    }
+```
+Aquí se creó un endpoint GET que recibe valores desde la URL (min_events y limit), usa la conexión a la base de datos y ejecuta la consulta, ya con eso transforma el resultado en un formato que la API puede regresar como JSON.
