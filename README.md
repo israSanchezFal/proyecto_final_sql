@@ -437,3 +437,70 @@ Estas consultas permiten obtener información resumida o agrupada, sin necesidad
 Esto ayudó a ver cómo la API también puede servir para consultar datos, no solo para modificarlos.
 
 
+
+```mermaid
+erDiagram
+    %% Configuración de tema para que se vea limpio (similar a tu imagen)
+    %%{init: {'theme':'neutral'}}%%
+
+    crash {
+        bigint crash_id PK
+        varchar crash_record_id UK
+        timestamp crash_date
+        int crash_hour
+        int crash_day_of_week
+        int posted_speed_limit
+        text traffic_control_device
+        text weather_condition
+        text lighting_condition
+        text first_crash_type
+        text trafficway_type
+        text alignment
+        text roadway_surface_cond
+        text crash_type
+        boolean hit_and_run
+        text damage
+        int num_units
+    }
+
+    crash_location {
+        bigint crash_id PK,FK
+        int street_no
+        text street_direction
+        text street_name
+        int beat_of_occurrence
+        numeric latitude
+        numeric longitude
+        text location
+    }
+
+    crash_injury_summary {
+        bigint crash_id PK,FK
+        text most_severe_injury
+        int injuries_total
+        int injuries_fatal
+        int injuries_incapacitating
+        int injuries_non_incapacitating
+    }
+
+    cat_contributory_cause {
+        bigint cause_id PK
+        text cause_text UK
+    }
+
+    crash_cause {
+        bigint crash_id PK,FK
+        text cause_role PK
+        bigint cause_id FK
+    }
+
+    %% Relaciones
+    crash ||--|| crash_location : "tiene ubicación"
+    crash ||--|| crash_injury_summary : "tiene reporte"
+    crash ||--|{ crash_cause : "tiene factores"
+    cat_contributory_cause ||--|{ crash_cause : "clasificado como"
+```
+
+
+
+
