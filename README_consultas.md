@@ -93,9 +93,21 @@ Este análisis convierte los datos crudos de lesiones y muertes en un atributo a
 Identificar las zonas que concentran la mayor cantidad de accidentes de acuerdo a los registros historicos de la base(desde 2013). De ésta consulta no se espera encontrar puntos criticos aislados (independientes entre sí). Queremos un **patrón** repetitivo de las caracteristicas en común que podrían estarse generalizando en las zonas.
 ### 🧠 Metodología y Lógica SQL
 Agrupamos los accidentes por nombre de la calle y ,con una funcion de ventana, obtenemos la suma total de de choques de la ciudad para luego calcular los porcentajes por calle. Finalmente, usamos `RANK()` para extraer las 10 zonas de mayor urgencia (se tuvo en mente los empates).
-```sql
 
-```
+| Puesto | Street Name  | Total Choques | % del Total Global |
+|-------:|--------------|---------------:|-------------------:|
+| 1 | WESTERN AVE  | 27,416 | 2.7435 |
+| 2 | PULASKI RD  | 23,993 | 2.4010 |
+| 3 | CICERO AVE   | 22,449 | 2.2465 |
+| 4 | ASHLAND AVE  | 21,673 | 2.1688 |
+| 5 | HALSTED ST   | 19,257 | 1.9271 |
+| 6 | KEDZIE AVE   | 17,471 | 1.7483 |
+| 7 | MICHIGAN AVE | 12,824 | 1.2833 |
+| 8 | NORTH AVE    | 11,544 | 1.1552 |
+| 9 | STATE ST     | 11,209 | 1.1217 |
+|10 | CLARK ST     | 10,723 | 1.0731 |
+
+
 ### 🛠️ Plan de Acción y Medidas de Prevención
 * **Análisis de Características Comunes:** Estudiar si estas 10 calles comparten problemas de infraestructura (como mala iluminación o falta de señales reflectantes) para aplicar una solución estandarizada en todas ellas.
 
@@ -112,7 +124,7 @@ Determinar la gravedad de los accidentes donde el responsable se da a la fuga (H
 *  **Precision:** Casteamos a numeric para segurar decimales precisos.
 
 ```sql
-
+ch
 ```
 
 ### 🛡️ Estrategias Basadas en la Severidad de las Fugas
