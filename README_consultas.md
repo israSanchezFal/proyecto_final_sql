@@ -123,9 +123,12 @@ Determinar la gravedad de los accidentes donde el responsable se da a la fuga (H
 * **Calculo porcentual:** Aplicamos la funcion de ventana `SUM(COUNT(*)) OVER ()` para obtener el total de fugas "sin agrupar", lo que nos permite calcular el total de fugas y el porcentaje de cada categoria de daño sobre el conjunto.
 *  **Precision:** Casteamos a numeric para segurar decimales precisos.
 
-```sql
-ch
-```
+| Tipo de Daño        | Total de Casos | Porcentaje (%) |
+|--------------------|---------------:|---------------:|
+| OVER $1,500        | 190,551 | 63.49 |
+| $501 – $1,500      | 76,627  | 25.53 |
+| $500 OR LESS       | 32,940  | 10.98 |
+
 
 ### 🛡️ Estrategias Basadas en la Severidad de las Fugas
 a) Para Daños Mayores (Over $1,500)
@@ -176,9 +179,6 @@ Identificar el momento exacto de mayor riesgo en cada sector. No todas las zonas
 ### 🧠 Metodología y Lógica SQL
 Unimos ( `JOIN` ) crash con crash_location para obtener las zonas de los choques, y como primer subconsulta seleccionamos la zona, nombre de la calle, hora y contamos el total de choques. La segunda subconsulta usa función de ventana para que el sistema elija automáticamente solo la hora con más choques de cada lugar, enfocandonos en las zonas problemáticas.
 
-```sql
-
-```
 ### 🚀 Estrategias de Intervención y Respuesta
 * **Vigilancia**: Programar patrullajes preventivos que coincidan con la "hora pico" de cada calle, asegurando presencia policial en el momento de mayor vulnerabilidad.
 
