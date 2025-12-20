@@ -128,26 +128,25 @@ WITH rankin_calles AS (
     SELECT 
         street_name,
         COUNT(*) AS total_choques,
-        -- Sumamos todos los conteos para tener el gran total
+        -- Sumamos todos los conteos para tener el gran total global
         SUM(COUNT(*)) OVER () AS gran_total_choques,
-        -- Ranking para encontrar la #1
+        -- Ranking para identificar el Top 10 de peligrosidad
         RANK() OVER (ORDER BY COUNT(*) DESC) AS ranking_peligrosidad
     FROM crash_location
     GROUP BY street_name
 )
 SELECT 
+    ranking_peligrosidad AS puesto,
     street_name,
     total_choques,
-    -- Porcentaje: (Choques en esta calle / Total de choques) * 100
+    -- Porcentaje de impacto de la calle sobre el total de la ciudad
     ROUND(
         (total_choques::numeric / NULLIF(gran_total_choques, 0)) * 100, 4
     ) AS porcentaje_del_total_global
 FROM rankin_calles
-WHERE ranking_peligrosidad = 1;
+WHERE ranking_peligrosidad <= 10
+ORDER BY ranking_peligrosidad ASC;
 
-
-
-    
 --C6. Análisis de 'Hit and Run': Distribución y peso porcentual por tipo de daño
 WITH fugas_por_costo AS (
     SELECT 
