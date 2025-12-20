@@ -443,58 +443,111 @@ La normalización se realizó de forma intuitiva, justificada y consistente con 
 ---
 ### Creación de API
 
-En esta parte del proyecto se realizó la creación de una API utilizando FastAPI.
-Esta API nos permite conectarnos a la base de datos que ya habíamos diseñado y normalizado previamente, y trabajar con la información de una forma más ordenada.
-Es la primera vez que se realiza una API en el proyecto, por lo que el enfoque fue mantener las cosas simples y funcionales, sin buscar una estructura demasiado compleja.
+Para empezar se necesita la creacion de una carpeta donde se realizará el proyecto, en nuestro caso proyecto_api, por si se necesita tomar en cuenta al momento de hacer la carga. En MAC se realizó asi:
 
-#### ¿Para qué funciona?
-La API se creó con el objetivo de:
-- Poder insertar datos en las tablas.
-- Consultar la información almacenada.
-- Modificar registros existentes.
-- Eliminar registros cuando sea necesario.
-Además, se utilizaron algunos endpoints para ejecutar consultas más complejas, de forma que los resultados pudieran obtenerse directamente desde la API y no solo desde la base de datos.
-La API funciona como un intermediario entre la base de datos y el usuario.
-
-#### ¿Cómo se utiliza?
-
-Una vez que los archivos están listos, la API se ejecuta desde la terminal.
-Primero, se entra a la carpeta donde se encuentra el archivo main.py.
-Después, se corre el siguiente comando:
 ```console
-uvicorn main:app --reload
+python3 -m venv .venv
+```
+Después para hacer el entorno virtual
+```console
+source .venv/bin/activate
+```
+Ese comando lanzará una confirmación que es fácil de identificar. Después desde la misma terminar lo que queremos es despues de crear el archivo .env, modificarlo, por lo que hacemos:
+```console
+touch .env
+```
+Una vez dentro podemos modificar el archivo en donde esribiremos, lo siguiente dependiendo de nuestro proyecto:
+
+```console
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=traffic_crashes
+DB_USER=postgres
+DB_PASSWORD=1234
 ```
 
-Al hacer esto, la API se levanta localmente y queda disponible en la dirección que marca en la respuesta del comando.
+####Levantar el API
 
-FastAPI genera automáticamente una página donde se pueden ver y probar los endpoints.
-Esta página se puede abrir desde el navegador en:
+Dentro de nuestro ambiento y en la terminal hacemos:
+
 ```console
-http://127.0.0.1:8000/docs
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
 ```
-Desde ahí es posible:
-- Ver qué operaciones existen.
-- Revisar qué datos recibe cada endpoint.
-- Probar las operaciones sin necesidad de usar otras herramientas.
-Esto facilitó mucho las pruebas durante el desarrollo.
+Donde esos 0.0.0.0 permiten la conexión de diferentes direcciones a nuestro API
 
-####Archivos que se utilizan
+### Main.py
+Esta es la parte más importante ya que aquí, con los modelos y los esquemas de nuestras tablas ya normalizadas, realizaremos el código que nos servira para hacer las operaciones CRUD.
+Antes que nada, cabe aclarar que todos los endpoints, usan una sesión obtenida de:
 
-Para la creación de la API se trabajó principalmente con los siguientes archivos:
-- `main.py`
-Es el archivo principal.
-Aquí se crea la aplicación con FastAPI y se definen todos los endpoints.
-Las operaciones CRUD siguen siempre la misma estructura, por lo que una vez entendida una, las demás funcionan de manera similar.
-- `database.py`
-En este archivo se configura la conexión a la base de datos.
-También se define la forma en la que la API obtiene una sesión para comunicarse con PostgreSQL.
-- `models_final.py`
-Contiene los modelos que representan las tablas de la base de datos.
-Estos modelos reflejan el diseño normalizado y ayudan a que la API sepa cómo guardar y leer los datos.
-- `schemas.py`
-Aquí se definen los esquemas que se usan para validar la información que entra a la API.
-De esta forma se controla qué campos son obligatorios y cuáles pueden quedar vacíos.
+El POST, que funciona para agregar un nuevo registo:
+```sql
+@app.post("/crash")
+def create_crash(crash: CrashCreate, db: Session = Depends(get_db)):
+    new_crash = Crash(**crash.dict())
+    db.add(new_crash)
+    db.commit()
+    db.refresh(new_crash)
+    return new_crash
+```
+En este caso lo más importante es **crash.dict(), ya que convierte el JSON en campos del modelo, de tal forma que nos permite escribir un diccionario con los atributos que deseamos agregar
 
+El GET en general de una tabla se hace así:
+
+```sql
+@app.get("/crash")
+def get_all_crashes(db: Session = Depends(get_db)):
+    return db.query(Crash).all()
+```
+Esa es la forma general, ya depende de nosotros si queremos ponerle un limite, que es la mejor opción, ya que buscamos que la consulta sea rápida, y al tener tantas tuplas, puede incluso marcarnos error por el tamaño mismo.
+
+El GET de una tupla en especifico, lo utilizaremos con el id.
+```sql
+@app.get("/crash/{crash_id}")
+def get_crash_by_id(crash_id: int, db: Session = Depends(get_db)):
+    crash = db.query(Crash).filter(Crash.crash_id == crash_id).first()
+
+    if not crash:
+        raise HTTPException(status_code=404, detail="Crash no encontrado")
+
+    return crash
+```
+
+El PUT, que modifica un registro ya existente:
+```sql
+@app.put("/crash/{id}")
+def update_crash(id: int, data: schemas.CrashCreate, db: Session = Depends(get_db)):
+    db_crash = db.query(models_final.Crash).filter(models_final.Crash.crash_id == id).first()
+    if db_crash:
+        for key, value in data.dict().items():
+            setattr(db_crash, key, value)
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            return {
+                "message": "Error: constraint violada (posible crash_record_id duplicado)",
+                "crash": db_crash
+            }
+        db.refresh(db_crash)
+    return {"crash": db_crash}
+
+```
+
+Esta operación, se basa principalmente en obtener primero con el id el registro, para si es que existe, después modificarlo.
+
+Finalmente, el DELETE, como su nombre lo dice, elimina el registro:
+```sql
+@app.delete("/crash/{id}")
+def delete_crash(id: int, db: Session = Depends(get_db)):
+    db_crash = db.query(models_final.Crash).filter(models_final.Crash.crash_id == id).first()
+    if db_crash:
+        db.delete(db_crash)
+        db.commit()
+    return {"crash": db_crash}
+```
+Al concluir con el proceso de la creación de los modelos, esquemas y las operaciones en el main, en tu browser al pegar tu dirección ip, o sea la direccion en donde se creó tu servidor te debería de aparecer algo como esto:
+
+<img width="2846" height="556" alt="image" src="https://github.com/user-attachments/assets/460ea2fb-4991-40be-8cdd-d8aa28a88259" />
 
 #### Consultas desde la API
 Además de las operaciones básicas, se agregaron algunos endpoints que ejecutan consultas directamente en SQL desde la API.
