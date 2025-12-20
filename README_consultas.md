@@ -110,7 +110,7 @@ Agrupamos los accidentes por nombre de la calle y ,con una funcion de ventana, o
 
 ### 🛠️ Plan de Acción y Medidas de Prevención
 
-* **Focalización de Presupuesto:** Priorizar estas vialidades en los programas de mantenimiento, ya que intervenir el Top 10 tiene un impacto masivo en la reducción del porcentaje total de accidentes de la ciudad.
+* **Focalización de Presupuesto:** Priorizar estas vialidades en los programas de mantenimiento, ya que intervenir el **Top 10** tiene un impacto masivo en la reducción del porcentaje total de accidentes de la ciudad.
 * **Vigilancia por Patrones:** Implementar radares de velocidad y operativos de tránsito en estos puntos.
 
 ## 🏎️💨 Análisis de 'Hit and Run': Distribución y peso porcentual
