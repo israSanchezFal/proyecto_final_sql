@@ -87,8 +87,21 @@ A partir de esta consulta se observa que:
 Este análisis convierte los datos crudos de lesiones y muertes en un atributo analítico interpretable (`indice_letalidad`), útil para priorizar intervenciones y campañas de prevención.
 
 <img width="957" height="277" alt="Captura de pantalla 2025-12-03 a la(s) 11 18 37 a m" src="https://github.com/user-attachments/assets/21b41976-f251-45ec-9ec8-0e59afcdec05" />
-## 🛣️ La Calle más Peligrosa: Ranking y Contribución
 
+## 🛣️ La Calle más Peligrosa: Ranking y Contribución
+### 🎯 Objetivo del Análisis
+Identificar las zonas que concentran la mayor cantidad de accidentes de acuerdo a los registros historicos de la base(desde 2013). De ésta consulta no se espera encontrar puntos criticos aislados (independientes entre sí). Queremos un **patrón** repetitivo de las caracteristicas en común que podrían estarse generalizando en las zonas.
+### 🧠 Metodología y Lógica SQL
+Agrupamos los accidentes por nombre de la calle y ,con una funcion de ventana, obtenemos la suma total de de choques de la ciudad para luego calcular los porcentajes por calle. Finalmente, usamos `RANK()` para extraer las 10 zonas de mayor urgencia (se tuvo en mente los empates).
+```sql
+
+```
+### 🛠️ Plan de Acción y Medidas de Prevención
+* **Análisis de Características Comunes:** Estudiar si estas 10 calles comparten problemas de infraestructura (como mala iluminación o falta de señales reflectantes) para aplicar una solución estandarizada en todas ellas.
+
+* **Focalización de Presupuesto:** Priorizar estas vialidades en los programas de mantenimiento, ya que intervenir el Top 10 tiene un impacto masivo en la reducción del porcentaje total de accidentes de la ciudad.
+
+* **Vigilancia por Patrones:** Implementar radares de velocidad y operativos de tránsito en estos puntos, dado que presentan comportamientos de riesgo que se repiten de forma constante.
 
 ## 🏎️💨 Análisis de 'Hit and Run': Distribución y peso porcentual
 ### 🎯 Objetivo del Análisis
@@ -99,21 +112,7 @@ Determinar la gravedad de los accidentes donde el responsable se da a la fuga (H
 *  **Precision:** Casteamos a numeric para segurar decimales precisos.
 
 ```sql
-WITH fugas_por_costo AS (
-    SELECT 
-        damage AS tipo_daño,
-        COUNT(*) AS total_casos,
-        SUM(COUNT(*)) OVER () AS total_fugas_global
-    FROM crash
-    WHERE hit_and_run = 'TRUE'
-    GROUP BY damage
-)
-SELECT 
-    tipo_daño,
-    total_casos,
-    ROUND((total_casos::numeric / NULLIF(total_fugas_global, 0)) * 100, 2) AS porcentaje
-FROM fugas_por_costo
-ORDER BY total_casos DESC;
+
 ```
 
 ### 🛡️ Estrategias Basadas en la Severidad de las Fugas
@@ -134,27 +133,7 @@ Seguros de "Responsabilidad Civil" Accesibles: Campañas de concientización sob
 Identificar los meses con mayor volumen de accidentes por año.
 Con una subconsulta se agrupan los datos por mes y por año y, con ayuda de funciones de ventana, se calcula el total de choques anuales y clasifica por frecuencia de forma descendente. Finalmente se extrae el primer lugar de cada periodo **anual**.
 ```sql
-WITH datos_por_mes AS (
-    SELECT 
-        EXTRACT(YEAR FROM crash_date) AS anio, 
-        EXTRACT(MONTH FROM crash_date) AS mes, 
-        COUNT(*) AS choques_mes
-    FROM crash
-    GROUP BY anio, mes
-),
-ranking_totales AS (
-    SELECT 
-        anio, mes, choques_mes, 
-        SUM(choques_mes) OVER (PARTITION BY anio) AS choques_anio, 
-        RANK() OVER (PARTITION BY anio ORDER BY choques_mes DESC) AS ranking_mes
-    FROM datos_por_mes
-)
-SELECT 
-    anio, mes, choques_mes, choques_anio,
-    ROUND((choques_mes::numeric / NULLIF(choques_anio, 0)) * 100, 2) AS porcentaje_del_anio 
-FROM ranking_totales
-WHERE ranking_mes = 1
-ORDER BY anio;
+
 ```
 ### 💡Acciones estrategicas
 * Optimización Operativa: Ajustar los roles de patrullaje y turnos de servicios de emergencia para maximizar la cobertura durante los meses que concentran el mayor porcentaje de accidentes anuales.
@@ -170,27 +149,7 @@ Identificar el momento exacto de mayor riesgo en cada sector. No todas las zonas
 Unimos ( `JOIN` ) crash con crash_location para obtener las zonas de los choques, y como primer subconsulta seleccionamos la zona, nombre de la calle, hora y contamos el total de choques. La segunda subconsulta usa función de ventana para que el sistema elija automáticamente solo la hora con más choques de cada lugar, enfocandonos en las zonas problemáticas.
 
 ```sql
-WITH zona_y_hora AS (
-    SELECT 
-        cl.beat_of_occurrence AS zona,
-        cl.street_name AS nombre_calle,
-        c.crash_hour AS hora,
-        COUNT(*) AS total_choques
-    FROM crash c
-    JOIN crash_location cl ON c.crash_id = cl.crash_id
-    GROUP BY cl.beat_of_occurrence, cl.street_name, c.crash_hour
-),
-ranking_horario AS (
-    SELECT 
-        zona, nombre_calle, hora, total_choques, 
-        RANK() OVER (PARTITION BY zona ORDER BY total_choques DESC) AS ranking
-    FROM zona_y_hora
-)
-SELECT 
-    zona, nombre_calle, hora AS hora_mas_peligrosa, total_choques
-FROM ranking_horario
-WHERE ranking = 1 
-ORDER BY zona ASC;
+
 ```
 ### 🚀 Estrategias de Intervención y Respuesta
 * **Vigilancia**: Programar patrullajes preventivos que coincidan con la "hora pico" de cada calle, asegurando presencia policial en el momento de mayor vulnerabilidad.
